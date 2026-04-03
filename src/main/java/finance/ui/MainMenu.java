@@ -1,9 +1,16 @@
 package finance.ui;
 
+import finance.service.TransactionService;
+
 import java.util.Scanner;
 
 public class MainMenu {
     Scanner scanner = new Scanner(System.in);
+    private TransactionService transactionService;
+
+    public MainMenu(TransactionService transactionService){
+        this.transactionService = transactionService;
+    }
 
     public void show() {
         while (true) {
