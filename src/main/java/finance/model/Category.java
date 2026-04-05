@@ -1,6 +1,8 @@
 package finance.model;
 
-public class Category {
+import finance.interfaces.Identifiable;
+
+public class Category implements Identifiable {
     private String name;
     private int id;
     private TransactionType type;

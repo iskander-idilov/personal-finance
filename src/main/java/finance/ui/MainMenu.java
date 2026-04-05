@@ -27,7 +27,8 @@ public class MainMenu {
 
             switch (input) {
                 case 1:
-                    System.out.println("1. Добавить доход");
+                    System.out.println("Введите сумму");
+                    double amount = scanner.nextDouble();
                     break;
 
                 case 2:

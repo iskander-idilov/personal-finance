@@ -1,6 +1,8 @@
 package finance.model;
 
-public class Transaction {
+import finance.interfaces.Identifiable;
+
+public class Transaction implements Identifiable {
     private int id;
     private double amount;
     private String date;

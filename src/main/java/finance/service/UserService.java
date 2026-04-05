@@ -2,7 +2,7 @@ package finance.service;
 import finance.model.User;
 import java.util.ArrayList;
 
-public class UserService {
+public class UserService extends BaseService<User> {
     private ArrayList<User> users = new ArrayList<>();
 
     public UserService(){
@@ -22,14 +22,5 @@ public class UserService {
 
     public void removeUser(User user){
         users.remove(user);
-    }
-
-    public User findById(int id){
-        for (User user : users){
-            if (user.getId() == id){
-                return user;
-            }
-        }
-        return null;
     }
 }

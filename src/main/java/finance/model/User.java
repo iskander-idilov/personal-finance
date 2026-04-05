@@ -1,6 +1,8 @@
 package finance.model;
 
-public class User {
+import finance.interfaces.Identifiable;
+
+public class User implements Identifiable {
     private int id;
     private String name;
 

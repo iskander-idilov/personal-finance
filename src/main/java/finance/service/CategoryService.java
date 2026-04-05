@@ -2,7 +2,7 @@ package finance.service;
 import java.util.ArrayList;
 import finance.model.Category;
 
-public class CategoryService {
+public class CategoryService extends BaseService<Category> {
     private ArrayList<Category> categories = new ArrayList<>();
 
     public CategoryService(){
@@ -22,14 +22,5 @@ public class CategoryService {
 
     public void removeCategory(Category category){
         categories.remove(category);
-    }
-
-    public Category findById(int id){
-        for (Category category : categories){
-            if(category.getId() == id){
-                return category;
-            }
-        }
-        return null;
     }
 }

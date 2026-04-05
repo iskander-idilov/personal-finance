@@ -2,7 +2,7 @@ package finance.service;
 import finance.model.Transaction;
 import java.util.ArrayList;
 
-public class TransactionService {
+public class TransactionService extends BaseService<Transaction> {
     private ArrayList<Transaction> transactions = new ArrayList<>();
 
     public TransactionService(){
@@ -19,14 +19,5 @@ public class TransactionService {
 
     public void removeTransaction(Transaction transaction){
         transactions.remove(transaction);
-    }
-
-    public Transaction findById(int id){
-        for (Transaction transaction : transactions){
-            if (transaction.getId() == id){
-                return transaction;
-            }
-        }
-        return null;
     }
 }
