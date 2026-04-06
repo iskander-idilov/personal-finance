@@ -1,5 +1,9 @@
 package finance.ui;
 
+import finance.model.Account;
+import finance.model.Category;
+import finance.model.Transaction;
+import finance.model.TransactionType;
 import finance.service.TransactionService;
 
 import java.util.Scanner;
@@ -29,10 +33,13 @@ public class MainMenu {
                 case 1:
                     System.out.println("Введите сумму");
                     double amount = scanner.nextDouble();
+                    Transaction transaction = new Transaction(1, amount, "2026-06-03", TransactionType.INCOME, new Category(), new Account());
+                    transactionService.addTransaction(transaction);
+                    System.out.println("Доход успешно добавлен");
                     break;
 
                 case 2:
-                    System.out.println("2. Добавить расход");
+                    System.out.println("Введите сумму");
                     break;
 
                 case 3:
