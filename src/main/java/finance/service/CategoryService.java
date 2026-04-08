@@ -3,24 +3,26 @@ import java.util.ArrayList;
 import finance.model.Category;
 
 public class CategoryService extends BaseService<Category> {
-    private ArrayList<Category> categories = new ArrayList<>();
+    private int nextId = 1;
 
     public CategoryService(){
-        this.categories = new ArrayList<>();
+        this.items = new ArrayList<>();
     }
 
     public CategoryService(ArrayList<Category> categories){
-        this.categories = categories;
+        this.items = categories;
     }
 
-    public ArrayList<Category> getCategories(){return categories;}
-    public void setCategories(ArrayList<Category> categories){this.categories = categories;}
+    public ArrayList<Category> getCategories(){return items;}
+    public void setCategories(ArrayList<Category> categories){this.items = categories;}
 
     public void addCategory(Category category){
-          categories.add(category);
+        category.setId(nextId);
+        nextId++;
+        items.add(category);
     }
 
     public void removeCategory(Category category){
-        categories.remove(category);
+        items.remove(category);
     }
 }

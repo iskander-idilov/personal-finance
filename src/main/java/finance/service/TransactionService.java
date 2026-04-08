@@ -3,21 +3,27 @@ import finance.model.Transaction;
 import java.util.ArrayList;
 
 public class TransactionService extends BaseService<Transaction> {
-    private ArrayList<Transaction> transactions = new ArrayList<>();
+    private int nextId = 1;
 
     public TransactionService(){
-        this.transactions = new ArrayList<>();
+        this.items = new ArrayList<>();
     }
 
     public TransactionService(ArrayList<Transaction> transactions){
-        this.transactions = transactions;
+        this.items = transactions;
+    }
+
+    public ArrayList<Transaction> getTransactions(){
+        return items;
     }
 
     public void addTransaction(Transaction transaction){
-        transactions.add(transaction);
+        transaction.setId(nextId);
+        nextId++;
+        items.add(transaction);
     }
 
     public void removeTransaction(Transaction transaction){
-        transactions.remove(transaction);
+        items.remove(transaction);
     }
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 //Это абстрактный класс для хранение объектов любого типа и поисках их по ID
 public abstract class BaseService<T extends Identifiable> {
-    private ArrayList<T> items;
+    protected ArrayList<T> items;
 
     public BaseService(){
         this.items = new ArrayList<>();
