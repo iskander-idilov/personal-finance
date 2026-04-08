@@ -1,17 +1,10 @@
 package finance;
-import finance.service.CategoryService;
-import finance.service.StorageService;
-import finance.service.TransactionService;
-import finance.ui.MainMenu;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SpringBootApplication
 public class App {
     public static void main(String[] args){
-         TransactionService transactionService = new TransactionService();
-         CategoryService categoryService = new CategoryService();
-         StorageService storageService = new StorageService();
-         MainMenu menu = new MainMenu(transactionService, categoryService, storageService);
-         menu.show();
-
-
+        SpringApplication.run(App.class, args);
     }
 }
