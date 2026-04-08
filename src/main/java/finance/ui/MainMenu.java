@@ -5,6 +5,7 @@ import finance.model.Category;
 import finance.model.Transaction;
 import finance.model.TransactionType;
 import finance.service.CategoryService;
+import finance.service.StorageService;
 import finance.service.TransactionService;
 
 import java.time.LocalDateTime;
@@ -14,10 +15,12 @@ public class MainMenu {
     Scanner scanner = new Scanner(System.in);
     private TransactionService transactionService;
     private CategoryService categoryService;
+    private  StorageService storageService;
 
-    public MainMenu(TransactionService transactionService, CategoryService categoryService) {
+    public MainMenu(TransactionService transactionService, CategoryService categoryService, StorageService storageService) {
         this.transactionService = transactionService;
         this.categoryService = categoryService;
+        this.storageService = storageService;
     }
 
 
@@ -164,6 +167,7 @@ public class MainMenu {
                     break;
 
                 case 6:
+                    storageService.exportToCSV(transactionService.getTransactions());
                     System.out.println("Удачного дня!");
                     return;
             }
