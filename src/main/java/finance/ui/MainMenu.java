@@ -1,5 +1,4 @@
 package finance.ui;
-
 import finance.model.Account;
 import finance.model.Category;
 import finance.model.Transaction;
@@ -7,8 +6,8 @@ import finance.model.TransactionType;
 import finance.service.CategoryService;
 import finance.service.StorageService;
 import finance.service.TransactionService;
-
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class MainMenu {
@@ -155,6 +154,7 @@ public class MainMenu {
                             break;
 
                         case 3:
+                            Collections.sort(transactionService.getTransactions(), (Transaction a, Transaction b) -> a.getAmount() > b.getAmount() ? 1 : -1);
                             for (Transaction tx : transactionService.getTransactions()){
                                 System.out.println(tx.getAmount() + " | " + tx.getType() + " | " + tx.getCategory().getName() + " | " + tx.getDate());
                             }
