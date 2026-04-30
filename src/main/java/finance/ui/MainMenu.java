@@ -54,15 +54,10 @@ public class MainMenu {
                     break;
 
                 case 3:
-                    double balance = 0;
-                    for (Transaction tx : transactionService.getTransactions()) {
-                        if (tx.getType() == TransactionType.INCOME) {
-                            balance += tx.getAmount();
-                        } else {
-                            balance -= tx.getAmount();
-                        }
-                    }
-                    System.out.println("Ваш баланс составляет: " + balance);
+                    double income = transactionService.getTransactions().stream().filter(tx -> tx.getType() == TransactionType.INCOME).mapToDouble(tx -> tx.getAmount()).sum();
+                    double expense = transactionService.getTransactions().stream().filter(tx -> tx.getType() == TransactionType.EXPENSE).mapToDouble((tx -> tx.getAmount())).sum();
+                    double balance = income - expense;
+                    System.out.println("Ваш баланс:" + balance);
                     break;
 
                 case 4:
