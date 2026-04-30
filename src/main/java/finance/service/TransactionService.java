@@ -1,7 +1,9 @@
 package finance.service;
 import finance.model.Transaction;
+import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 
+@Service
 public class TransactionService extends BaseService<Transaction> {
     private int nextId = 1;
 
