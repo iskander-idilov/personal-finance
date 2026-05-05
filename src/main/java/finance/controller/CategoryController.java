@@ -1,4 +1,5 @@
 package finance.controller;
+import finance.model.Category;
 import finance.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,22 @@ public class CategoryController {
             return "categories";
         }
         categoryService.addCategory(name);
+        return "redirect:/categories";
+    }
+
+    @PostMapping("/categories/delete")
+    public String deleteCategory(@RequestParam Long id){
+        Category category = categoryService.findById(id);
+        categoryService.removeCategory(category);
+
+        return "redirect:/categories";
+    }
+
+    @PostMapping("/categories/edit")
+    public String editCategory(@RequestParam Long id, @RequestParam String name){
+        Category category = categoryService.findById(id);
+        category.setName(name);
+
         return "redirect:/categories";
     }
 }

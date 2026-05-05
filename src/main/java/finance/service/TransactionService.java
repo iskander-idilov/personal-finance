@@ -1,31 +1,23 @@
 package finance.service;
 import finance.model.Transaction;
+import finance.repository.TransactionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
+import java.util.List;
 
 @Service
-public class TransactionService extends BaseService<Transaction> {
-    private int nextId = 1;
-
-    public TransactionService(){
-        this.items = new ArrayList<>();
-    }
-
-    public TransactionService(ArrayList<Transaction> transactions){
-        this.items = transactions;
-    }
-
-    public ArrayList<Transaction> getTransactions(){
-        return items;
+public class TransactionService{
+    @Autowired
+    TransactionRepository transactionRepository;
+    public List<Transaction> getTransactions(){
+        return transactionRepository.findAll();
     }
 
     public void addTransaction(Transaction transaction){
-        transaction.setId(nextId);
-        nextId++;
-        items.add(transaction);
+        transactionRepository.save(transaction);
     }
 
     public void removeTransaction(Transaction transaction){
-        items.remove(transaction);
+        transactionRepository.delete(transaction);
     }
 }
