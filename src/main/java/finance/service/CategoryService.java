@@ -1,38 +1,40 @@
 package finance.service;
-import java.util.ArrayList;
+import java.util.List;
 import finance.model.Category;
 import finance.model.TransactionType;
+import finance.repository.CategoryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CategoryService extends BaseService<Category> {
-    private int nextId = 1;
+public class CategoryService {
 
-    public CategoryService(){
-        this.items = new ArrayList<>();
+    @Autowired
+    CategoryRepository categoryRepository;
+
+    public List<Category> getCategories(){
+        return categoryRepository.findAll();
     }
-
-    public CategoryService(ArrayList<Category> categories){
-        this.items = categories;
-    }
-
-    public ArrayList<Category> getCategories(){return items;}
-    public void setCategories(ArrayList<Category> categories){this.items = categories;}
 
     public void addCategory(Category category){
-        category.setId(nextId);
-        nextId++;
-        items.add(category);
+        categoryRepository.save(category);
     }
 
     public void addCategory(String name){
         if (name != null && !name.trim().isEmpty()){
-            Category category = new Category(name.trim(), 0, TransactionType.INCOME);
+            Category category = Category.builder()
+                    .name(name)
+                    .type(TransactionType.INCOME)
+                    .build();
             addCategory(category);
         }
     }
 
     public void removeCategory(Category category){
-        items.remove(category);
+        categoryRepository.delete(category);
+    }
+
+    public Category findById(Long id){
+        return categoryRepository.findById(id).orElse(null);
     }
 }

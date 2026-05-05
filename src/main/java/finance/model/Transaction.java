@@ -1,5 +1,6 @@
 package finance.model;
 import finance.interfaces.Identifiable;
+import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -7,11 +8,16 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Transaction implements Identifiable {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private double amount;
     private LocalDateTime date;
     private TransactionType type;
+    @ManyToOne
     private Category category;
+    @ManyToOne
     private Account account;
 }
