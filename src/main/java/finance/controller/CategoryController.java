@@ -42,6 +42,7 @@ public class CategoryController {
     public String editCategory(@RequestParam Long id, @RequestParam String name){
         Category category = categoryService.findById(id);
         category.setName(name);
+        categoryService.save(category);
 
         return "redirect:/categories";
     }
