@@ -1,9 +1,6 @@
 package finance.model;
 import finance.interfaces.Identifiable;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Data
@@ -11,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "users")
 public class User implements Identifiable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
