@@ -17,4 +17,6 @@ public class Category implements Identifiable {
     private Long id;
     private String name;
     private TransactionType type;
+    private boolean isDefault;
+    private String icon;
 }
