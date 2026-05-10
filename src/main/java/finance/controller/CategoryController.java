@@ -33,7 +33,12 @@ public class CategoryController {
     @PostMapping("/categories/delete")
     public String deleteCategory(@RequestParam Long id){
         Category category = categoryService.findById(id);
-        categoryService.removeCategory(category);
+
+        if (category.isDefault()){
+            return "redirect:/categories";
+        } else{
+            categoryService.removeCategory(category);
+        }
 
         return "redirect:/categories";
     }
@@ -41,8 +46,13 @@ public class CategoryController {
     @PostMapping("/categories/edit")
     public String editCategory(@RequestParam Long id, @RequestParam String name){
         Category category = categoryService.findById(id);
-        category.setName(name);
-        categoryService.save(category);
+
+        if (category.isDefault()){
+            return "redirect:/categories";
+        } else {
+            category.setName(name);
+            categoryService.save(category);
+        }
 
         return "redirect:/categories";
     }
