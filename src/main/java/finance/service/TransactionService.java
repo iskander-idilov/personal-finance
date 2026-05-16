@@ -17,7 +17,4 @@ public class TransactionService{
         transactionRepository.save(transaction);
     }
 
-    public void removeTransaction(Transaction transaction){
-        transactionRepository.delete(transaction);
-    }
 }

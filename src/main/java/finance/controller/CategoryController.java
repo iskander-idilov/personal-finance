@@ -34,12 +34,10 @@ public class CategoryController {
     public String deleteCategory(@RequestParam Long id){
         Category category = categoryService.findById(id);
 
-        if (category.isDefault()){
+        if (category == null || category.isDefault()){
             return "redirect:/categories";
-        } else{
-            categoryService.removeCategory(category);
         }
-
+        categoryService.removeCategory(category);
         return "redirect:/categories";
     }
 
@@ -47,7 +45,7 @@ public class CategoryController {
     public String editCategory(@RequestParam Long id, @RequestParam String name){
         Category category = categoryService.findById(id);
 
-        if (category.isDefault()){
+        if (category == null || category.isDefault()){
             return "redirect:/categories";
         } else {
             category.setName(name);
