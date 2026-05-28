@@ -1,8 +1,8 @@
 package finance.config;
-import finance.model.Account;
-import finance.model.Category;
-import finance.model.TransactionType;
-import finance.model.User;
+import finance.entity.Account;
+import finance.entity.Category;
+import finance.entity.TransactionType;
+import finance.entity.User;
 import finance.repository.AccountRepository;
 import finance.repository.CategoryRepository;
 import finance.repository.UserRepository;

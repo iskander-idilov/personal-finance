@@ -11,7 +11,6 @@
       Добавить транзакцию
     </button>
 
-    <!-- Bootstrap класс table делает красивую таблицу -->
     <table class="table table-striped">
       <thead>
       <tr>
@@ -19,22 +18,73 @@
         <th>Тип</th>
         <th>Категория</th>
         <th>Дата</th>
+        <th>Действия</th>
       </tr>
       </thead>
       <tbody>
-      <!-- th:each — цикл по каждой транзакции из модели -->
       <tr th:each="transaction : ${transactions}">
-        <!-- каждое поле — отдельная ячейка -->
         <td th:text="${transaction.amount}"></td>
         <td th:text="${transaction.type}"></td>
-        <!-- category — это объект, берём его поле name -->
         <td th:text="${transaction.category.name}"></td>
         <td th:text="${transaction.date}"></td>
+        <td>
+          <button class="btn btn-sm btn-outline-primary"
+                  data-bs-toggle="modal"
+                  th:data-bs-target="'#editModal' + ${transaction.id}">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <form th:action="@{/transactions/delete}" method="post" class="d-inline">
+            <input type="hidden" name="id" th:value="${transaction.id}">
+            <button type="submit" class="btn btn-sm btn-outline-danger">
+              <i class="bi bi-trash"></i>
+            </button>
+          </form>
+        </td>
       </tr>
       </tbody>
     </table>
+
+    <!-- Модальные окна редактирования -->
+    <div th:each="transaction : ${transactions}">
+      <div class="modal fade" th:id="'editModal' + ${transaction.id}" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Редактировать транзакцию</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <form th:action="@{/transactions/edit}" method="post">
+                <input type="hidden" name="id" th:value="${transaction.id}">
+                <select name="type"
+                        th:id="'editType' + ${transaction.id}"
+                        class="form-control mb-3"
+                        th:onchange="'filterEditCategories(' + ${transaction.id} + ')'">
+                  <option value="INCOME" th:selected="${transaction.type.name() == 'INCOME'}">Доход</option>
+                  <option value="EXPENSE" th:selected="${transaction.type.name() == 'EXPENSE'}">Расход</option>
+                </select>
+                <select name="categoryId"
+                        th:id="'editCategory' + ${transaction.id}"
+                        class="form-control mb-3">
+                  <option th:each="category : ${categories}"
+                          th:value="${category.id}"
+                          th:text="${category.name}"
+                          th:attr="data-type=${category.type}"
+                          th:selected="${category.id == transaction.category.id}">
+                  </option>
+                </select>
+                <input type="number" name="amount" th:value="${transaction.amount}" class="form-control mb-3" required>
+                <button type="submit" class="btn btn-primary w-100">Сохранить</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Модальное окно добавления -->
-    <div class="modal fade" id="addTransactionModal" tabindex="-1">
+    <div class="modal fade" id="addTransactionModal" tabindex="-1"
+         data-bs-event="shown.bs.modal">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -43,14 +93,15 @@
           </div>
           <div class="modal-body">
             <form th:action="@{/transactions}" method="post">
-              <select name="type" class="form-control mb-3">
+              <select name="type" id="typeSelect" class="form-control mb-3" onchange="filterCategories()">
                 <option value="INCOME">Доход</option>
                 <option value="EXPENSE">Расход</option>
               </select>
-              <select name="categoryId" class="form-control mb-3">
+              <select name="categoryId" id="categorySelect" class="form-control mb-3">
                 <option th:each="category : ${categories}"
                         th:value="${category.id}"
-                        th:text="${category.name}">
+                        th:text="${category.name}"
+                        th:attr="data-type=${category.type}">
                 </option>
               </select>
               <input type="text" name="amount" placeholder="Введите сумму" class="form-control mb-3" required>
@@ -64,5 +115,57 @@
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  let allCategories = [];
+
+  window.onload = function() {
+    const select = document.getElementById('categorySelect');
+    allCategories = Array.from(select.options).map(opt => ({
+      value: opt.value,
+      text: opt.text,
+      type: opt.dataset.type
+    }));
+    filterCategories();
+  };
+
+  function filterCategories() {
+    const type = document.getElementById('typeSelect').value;
+    const select = document.getElementById('categorySelect');
+    select.innerHTML = '';
+    allCategories.filter(c => c.type === type).forEach(c => {
+      const option = document.createElement('option');
+      option.value = c.value;
+      option.text = c.text;
+      select.appendChild(option);
+    });
+  }
+
+  function filterEditCategories(transactionId, selectedCategoryId) {
+    const type = document.getElementById('editType' + transactionId).value;
+    const select = document.getElementById('editCategory' + transactionId);
+    const current = selectedCategoryId || (select.options[select.selectedIndex] && select.options[select.selectedIndex].value);
+    select.innerHTML = '';
+    allCategories.filter(c => c.type === type).forEach(c => {
+      const option = document.createElement('option');
+      option.value = c.value;
+      option.text = c.text;
+      if (c.value === current) option.selected = true;
+      select.appendChild(option);
+    });
+  }
+
+  document.getElementById('addTransactionModal').addEventListener('shown.bs.modal', function() {
+    filterCategories();
+  });
+
+  document.querySelectorAll('[id^="editModal"]').forEach(function(modal) {
+    modal.addEventListener('shown.bs.modal', function() {
+      const transactionId = modal.id.replace('editModal', '');
+      const categorySelect = document.getElementById('editCategory' + transactionId);
+      const selectedCategoryId = categorySelect ? categorySelect.value : null;
+      filterEditCategories(transactionId, selectedCategoryId);
+    });
+  });
+</script>
 </body>
 </html>

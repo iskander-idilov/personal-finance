@@ -1,5 +1,5 @@
 package finance.controller;
-import finance.model.Category;
+import finance.entity.Category;
 import finance.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

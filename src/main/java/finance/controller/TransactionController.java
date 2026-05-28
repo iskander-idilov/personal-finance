@@ -1,9 +1,8 @@
 package finance.controller;
-import finance.model.Account;
-import finance.model.Category;
-import finance.model.Transaction;
-import finance.model.TransactionType;
-import finance.repository.CategoryRepository;
+import finance.entity.Account;
+import finance.entity.Category;
+import finance.entity.Transaction;
+import finance.entity.TransactionType;
 import finance.service.AccountService;
 import finance.service.CategoryService;
 import finance.service.TransactionService;
@@ -23,7 +22,7 @@ public class TransactionController {
     private final AccountService accountService;
 
     @GetMapping("/transactions")
-    public String transactions(Model model){
+    public String transactions(Model model) {
         model.addAttribute("transactions", transactionService.getTransactions());
         model.addAttribute("categories", categoryService.getCategories());
 
@@ -44,6 +43,41 @@ public class TransactionController {
                 .build();
 
         transactionService.addTransaction(transaction);
+
+        return "redirect:/transactions";
+    }
+
+    @PostMapping("transactions/delete")
+    public String deleteTransaction(@RequestParam Long id) {
+        Transaction transaction = transactionService.findById(id);
+
+        if (transaction == null) {
+            return "redirect:/transactions";
+        } else {
+            transactionService.removeTransaction(id);
+        }
+
+        return "redirect:/transactions";
+    }
+
+    @PostMapping("transactions/edit")
+    public String editTransaction(@RequestParam Long id,
+                                  @RequestParam double amount,
+                                  @RequestParam TransactionType type,
+                                  @RequestParam Long categoryId){
+
+        Transaction transaction = transactionService.findById(id);
+        Category category = categoryService.findById(categoryId);
+
+        if (transaction == null){
+            return "redirect:/transactions";
+        } else {
+            transaction.setAmount(amount);
+            transaction.setType(type);
+            transaction.setCategory(category);
+
+            transactionService.save(transaction);
+        }
 
         return "redirect:/transactions";
     }

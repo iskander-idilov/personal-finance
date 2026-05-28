@@ -1,4 +1,4 @@
-package finance.model;
+package finance.entity;
 import finance.interfaces.Identifiable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
