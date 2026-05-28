@@ -7,9 +7,16 @@
 
   <div class="flex-grow-1 p-4 bg-light">
     <h1>Транзакции</h1>
+    <div class="d-flex justify-content-between align-items-center mb-3">
     <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTransactionModal">
       Добавить транзакцию
     </button>
+
+    <form th:action="@{/transactions/search}" method="get" class="d-flex">
+      <input type="text" name="search" placeholder="Поиск..." class="form-control me-2" style="max-width: 300px;">
+      <button type="submit" class="btn btn-outline-secondary">Найти</button>
+    </form>
+    </div>
 
     <table class="table table-striped">
       <thead>
@@ -24,7 +31,7 @@
       <tbody>
       <tr th:each="transaction : ${transactions}">
         <td th:text="${transaction.amount}"></td>
-        <td th:text="${transaction.type}"></td>
+        <td th:text="${transaction.type == T(finance.entity.TransactionType).INCOME ? 'Доход' : 'Расход'}"></td>
         <td th:text="${transaction.category.name}"></td>
         <td th:text="${transaction.date}"></td>
         <td>
