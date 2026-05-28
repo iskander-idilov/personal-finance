@@ -19,4 +19,5 @@ public class TransactionService{
     public Transaction findById(Long id){return transactionRepository.findById(id).orElse(null);}
     public void removeTransaction(Long id){transactionRepository.deleteById(id);}
     public void save(Transaction transaction){transactionRepository.save(transaction);}
+    public List<Transaction> search(String search){return transactionRepository.search(search);}
 }

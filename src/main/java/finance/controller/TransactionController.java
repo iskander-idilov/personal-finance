@@ -81,4 +81,13 @@ public class TransactionController {
 
         return "redirect:/transactions";
     }
+
+    @GetMapping("/transactions/search")
+    public String search(Model model,
+                         @RequestParam String search){
+
+        model.addAttribute("transactions", transactionService.search(search));
+        model.addAttribute("categories", categoryService.getCategories());
+        return "transactions";
+    }
 }
