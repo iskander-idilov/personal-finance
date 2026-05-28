@@ -1,7 +1,7 @@
 package finance.service;
 import java.util.List;
-import finance.model.Category;
-import finance.model.TransactionType;
+import finance.entity.Category;
+import finance.entity.TransactionType;
 import finance.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;

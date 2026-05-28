@@ -1,4 +1,4 @@
-package finance.model;
+package finance.entity;
 
 public enum TransactionType {
     INCOME, EXPENSE
