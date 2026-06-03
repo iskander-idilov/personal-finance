@@ -1,5 +1,4 @@
 package finance.entity;
-import finance.interfaces.Identifiable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User implements Identifiable {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -3,9 +3,9 @@ import finance.entity.Account;
 import finance.entity.Category;
 import finance.entity.Transaction;
 import finance.entity.TransactionType;
-import finance.service.AccountService;
-import finance.service.CategoryService;
-import finance.service.TransactionService;
+import finance.service.impl.AccountServiceImpl;
+import finance.service.impl.CategoryServiceImpl;
+import finance.service.impl.TransactionServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,9 +17,9 @@ import java.time.LocalDateTime;
 @Controller
 @RequiredArgsConstructor
 public class TransactionController {
-    private final TransactionService transactionService;
-    private final CategoryService categoryService;
-    private final AccountService accountService;
+    private final TransactionServiceImpl transactionService;
+    private final CategoryServiceImpl categoryService;
+    private final AccountServiceImpl accountService;
 
     @GetMapping("/transactions")
     public String transactions(Model model) {
