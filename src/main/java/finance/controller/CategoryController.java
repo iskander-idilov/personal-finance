@@ -1,6 +1,6 @@
 package finance.controller;
 import finance.entity.Category;
-import finance.service.CategoryService;
+import finance.service.impl.CategoryServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequiredArgsConstructor
 public class CategoryController {
-    private final CategoryService categoryService;
+    private final CategoryServiceImpl categoryService;
     @GetMapping("/categories")
     public String categories(Model model){
         model.addAttribute("categories", categoryService.getCategories());
