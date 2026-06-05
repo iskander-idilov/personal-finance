@@ -32,7 +32,7 @@
       <tr th:each="transaction : ${transactions}">
         <td th:text="${transaction.amount}"></td>
         <td th:text="${transaction.type == T(finance.entity.TransactionType).INCOME ? 'Доход' : 'Расход'}"></td>
-        <td th:text="${transaction.category.name}"></td>
+        <td th:text="${transaction.categoryName}"></td>
         <td th:text="${transaction.date}"></td>
         <td>
           <button class="btn btn-sm btn-outline-primary"
@@ -77,7 +77,7 @@
                           th:value="${category.id}"
                           th:text="${category.name}"
                           th:attr="data-type=${category.type}"
-                          th:selected="${category.id == transaction.category.id}">
+                          th:selected="${category.id == transaction.categoryId}">
                   </option>
                 </select>
                 <input type="number" name="amount" th:value="${transaction.amount}" class="form-control mb-3" required>
