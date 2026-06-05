@@ -1,14 +1,15 @@
 package finance.service;
 
+import finance.dto.TransactionDTO;
 import finance.entity.Transaction;
 
 import java.util.List;
 
 public interface TransactionService {
-    List<Transaction> getTransactions();
+    List<TransactionDTO> getTransactions();
     void addTransaction(Transaction transaction);
     Transaction findById(Long id);
-    public void removeTransaction(Long id);
-    public void save(Transaction transaction);
-    public List<Transaction> search(String search);
+    void removeTransaction(Long id);
+    void save(Transaction transaction);
+    List<Transaction> search(String search);
 }
