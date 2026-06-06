@@ -1,6 +1,6 @@
 package finance.service.impl;
 import finance.dto.TransactionDTO;
-import finance.dto.TransactionMapper;
+import finance.dto.TransactionMapperMS;
 import finance.entity.Transaction;
 import finance.repository.TransactionRepository;
 import finance.service.TransactionService;
@@ -15,9 +15,9 @@ public class TransactionServiceImpl implements TransactionService {
     TransactionRepository transactionRepository;
 
     @Autowired
-    private TransactionMapper mapper;
+    private TransactionMapperMS mapper;
     @Override
-    public List<TransactionDTO> getTransactions(){return transactionRepository.findAll().stream().map(mapper::toDTO).collect(Collectors.toList());}
+    public List<TransactionDTO> getTransactions(){return transactionRepository.findAll().stream().map(mapper::toDto).collect(Collectors.toList());}
     @Override
     public void addTransaction(Transaction transaction){
         transactionRepository.save(transaction);

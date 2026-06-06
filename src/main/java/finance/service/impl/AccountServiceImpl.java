@@ -1,6 +1,6 @@
 package finance.service.impl;
 import finance.dto.AccountDTO;
-import finance.dto.AccountMapper;
+import finance.dto.AccountMapperMS;
 import finance.entity.Account;
 import finance.repository.AccountRepository;
 import finance.service.AccountService;
@@ -14,7 +14,7 @@ public class AccountServiceImpl implements AccountService {
     AccountRepository accountRepository;
 
     @Autowired
-    AccountMapper mapper;
+    AccountMapperMS mapper;
     @Override
     public Account getAccount() {return accountRepository.findAll().get(0);}
     @Override

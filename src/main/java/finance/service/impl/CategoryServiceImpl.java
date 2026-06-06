@@ -1,9 +1,8 @@
 package finance.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import finance.dto.CategoryDTO;
-import finance.dto.CategoryMapper;
+import finance.dto.CategoryMapperMS;
 import finance.entity.Category;
 import finance.entity.TransactionType;
 import finance.repository.CategoryRepository;
@@ -20,7 +19,7 @@ public class CategoryServiceImpl implements CategoryService {
     CategoryRepository categoryRepository;
 
     @Autowired
-    CategoryMapper mapper;
+    CategoryMapperMS mapper;
 
     @Cacheable("categories")
     @Override
