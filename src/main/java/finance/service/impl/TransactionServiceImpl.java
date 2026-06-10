@@ -10,6 +10,7 @@ import finance.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,7 +42,19 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction findById(Long id){return transactionRepository.findById(id).orElse(null);}
     @Override
-    public void removeTransaction(Long id){transactionRepository.deleteById(id);}
+    public void removeTransaction(Long id, Transaction transaction){
+        transactionRepository.deleteById(id);
+
+        Account account = accountRepository.findAll().get(0);
+
+        if (transaction.getType() == TransactionType.INCOME){
+            account.setBalance(account.getBalance() - transaction.getAmount());
+        } else {
+            account.setBalance(account.getBalance() + transaction.getAmount());
+        }
+
+        accountRepository.save(account);
+    }
     @Override
     public void save(Transaction transaction){transactionRepository.save(transaction);}
     @Override
@@ -50,5 +63,14 @@ public class TransactionServiceImpl implements TransactionService {
     public double getTotalIncome() {return transactionRepository.findAll().stream().filter(t -> t.getType() == TransactionType.INCOME).mapToDouble(Transaction::getAmount).sum();}
     @Override
     public double getTotalExpense() {return transactionRepository.findAll().stream().filter(t -> t.getType() == TransactionType.EXPENSE).mapToDouble(Transaction::getAmount).sum();}
+    @Override
+    public Map<String, Double> getExpensesByCategory() {
+        return getTransactions().stream()
+                .filter(t -> t.getType() == TransactionType.EXPENSE)
+                .collect(Collectors.groupingBy(
+                        TransactionDTO::getCategoryName,
+                        Collectors.summingDouble(TransactionDTO::getAmount)
+                ));
+    }
 
 }

@@ -19,6 +19,7 @@ public class HomeController {
         model.addAttribute("transactions" , transactionService.getTransactions());
         model.addAttribute("totalIncome", transactionService.getTotalIncome());
         model.addAttribute("totalExpense", transactionService.getTotalExpense());
+        model.addAttribute("expensesByCategory", transactionService.getExpensesByCategory());
 
         return "home";
     }

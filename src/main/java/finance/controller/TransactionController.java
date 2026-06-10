@@ -54,7 +54,7 @@ public class TransactionController {
         if (transaction == null) {
             return "redirect:/transactions";
         } else {
-            transactionService.removeTransaction(id);
+            transactionService.removeTransaction(id, transaction);
         }
 
         return "redirect:/transactions";
