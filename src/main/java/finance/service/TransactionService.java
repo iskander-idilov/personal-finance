@@ -1,8 +1,6 @@
 package finance.service;
-
 import finance.dto.TransactionDTO;
 import finance.entity.Transaction;
-
 import java.util.List;
 
 public interface TransactionService {
@@ -12,4 +10,6 @@ public interface TransactionService {
     void removeTransaction(Long id);
     void save(Transaction transaction);
     List<Transaction> search(String search);
+    double getTotalIncome();
+    double getTotalExpense();
 }
