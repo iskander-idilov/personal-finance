@@ -1,5 +1,6 @@
 package finance.controller;
 import finance.service.AccountService;
+import finance.service.StockService;
 import finance.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,7 @@ public class HomeController {
 
     private final AccountService accountService;
     private final TransactionService transactionService;
+    private final StockService stockService;
 
     @GetMapping("/")
     public String home(Model model){
@@ -20,6 +22,7 @@ public class HomeController {
         model.addAttribute("totalIncome", transactionService.getTotalIncome());
         model.addAttribute("totalExpense", transactionService.getTotalExpense());
         model.addAttribute("expensesByCategory", transactionService.getExpensesByCategory());
+        model.addAttribute("stocks", stockService.getStocks());
 
         return "home";
     }
