@@ -2,6 +2,7 @@ package finance.service.impl;
 import finance.dto.StockDTO;
 import finance.service.StockService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class StockServiceImpl implements StockService {
 
     private final List<String> tickers = List.of("AAPL", "GOOGL", "MSFT", "TSLA", "AMZN");
 
+    @Cacheable("stocks")
     @Override
     public List<StockDTO> getStocks() {
         List<StockDTO> stocks = new ArrayList<>();
