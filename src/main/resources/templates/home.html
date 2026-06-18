@@ -81,7 +81,18 @@
         <div class="card shadow-sm mt-4">
             <div class="card-body">
                 <h5 class="card-title mb-3">Рынок</h5>
-                <table class="table table-borderless">
+                <div th:if="${#lists.isEmpty(stocks)}" class="text-muted">
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                    Данные загружаются...
+                </div>
+                <table th:if="${not #lists.isEmpty(stocks)}" class="table table-borderless">
+                    <thead>
+                    <tr>
+                        <th>Тикер</th>
+                        <th>Цена</th>
+                        <th>Изменение</th>
+                    </tr>
+                    </thead>
                     <tbody>
                     <tr th:each="stock : ${stocks}">
                         <td><strong th:text="${stock.ticker}"></strong></td>

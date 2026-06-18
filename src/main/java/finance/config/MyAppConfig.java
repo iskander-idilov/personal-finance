@@ -20,6 +20,7 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 
 @Configuration
 @EnableCaching
+@org.springframework.scheduling.annotation.EnableAsync
 public class MyAppConfig {
     @Autowired
     AccountRepository accountRepository;
