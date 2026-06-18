@@ -58,7 +58,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public void save(Transaction transaction){transactionRepository.save(transaction);}
     @Override
-    public List<Transaction> search(String search){return transactionRepository.search(search);}
+    public List<TransactionDTO> search(String search){return transactionRepository.search(search).stream().map(mapper::toDto).collect(Collectors.toList());}
     @Override
     public double getTotalIncome() {return transactionRepository.findAll().stream().filter(t -> t.getType() == TransactionType.INCOME).mapToDouble(Transaction::getAmount).sum();}
     @Override
@@ -72,5 +72,7 @@ public class TransactionServiceImpl implements TransactionService {
                         Collectors.summingDouble(TransactionDTO::getAmount)
                 ));
     }
+    @Override
+    public List<TransactionDTO> findWithFilters(TransactionType type, Long categoryId) {return transactionRepository.findWithFilters(type, categoryId).stream().map(mapper::toDto).collect(Collectors.toList());}
 
 }
