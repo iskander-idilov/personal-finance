@@ -14,7 +14,7 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h6 class="text-muted">Текущий баланс</h6>
-                        <h3 th:text="${account.balance}"></h3>
+                        <h3 th:text="${#numbers.formatDecimal(account.balance, 1, 'WHITESPACE', 0, 'DEFAULT')}"></h3>
                     </div>
                 </div>
             </div>
@@ -22,7 +22,7 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h6 class="text-muted">Общий доход</h6>
-                        <h3 class="text-success" th:text="${totalIncome}"></h3>
+                        <h3 class="text-success" th:text="${#numbers.formatDecimal(totalIncome, 1, 'WHITESPACE', 0, 'DEFAULT')}"></h3>
                     </div>
                 </div>
             </div>
@@ -30,7 +30,7 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h6 class="text-muted">Общий расход</h6>
-                        <h3 class="text-danger" th:text="${totalExpense}"></h3>
+                        <h3 class="text-danger" th:text="${#numbers.formatDecimal(totalExpense, 1, 'WHITESPACE', 0, 'DEFAULT')}"></h3>
                     </div>
                 </div>
             </div>
@@ -64,7 +64,7 @@
                                 </thead>
                                 <tbody>
                                 <tr th:each="transaction : ${transactions}">
-                                    <td th:text="${transaction.amount}"></td>
+                                    <td th:text="${#numbers.formatDecimal(transaction.amount, 1, 'WHITESPACE', 0, 'DEFAULT')}"></td>
                                     <td th:text="${transaction.type == T(finance.entity.TransactionType).INCOME ? 'Доход' : 'Расход'}"></td>
                                     <td th:text="${transaction.categoryName}"></td>
                                     <td th:text="${#temporals.format(transaction.date, 'dd.MM.yyyy HH:mm')}"></td>

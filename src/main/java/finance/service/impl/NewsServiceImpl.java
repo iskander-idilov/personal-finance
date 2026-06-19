@@ -1,6 +1,7 @@
 package finance.service.impl;
 import finance.dto.NewsDTO;
 import finance.service.NewsService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -11,10 +12,14 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
+@Slf4j
 public class NewsServiceImpl implements NewsService {
 
     @Value("${finnhub.api.key}")
     private String apiKey;
+
+    @Value("${finnhub.news.limit:20}")
+    private int newsLimit;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -51,10 +56,10 @@ public class NewsServiceImpl implements NewsService {
                 news.add(new NewsDTO(title, description, articleUrl, image, publishedAt));
             }
 
-            cachedNews = Collections.unmodifiableList(news);
-            System.out.println("[NewsService] Loaded " + news.size() + " articles");
+            cachedNews = Collections.unmodifiableList(news.stream().limit(newsLimit).collect(java.util.stream.Collectors.toList()));
+            log.info("Loaded {} articles", news.size());
         } catch (Exception e) {
-            System.err.println("[NewsService] Failed: " + e.getMessage());
+            log.error("Failed: {}", e.getMessage(), e);
         } finally {
             loading.set(false);
         }

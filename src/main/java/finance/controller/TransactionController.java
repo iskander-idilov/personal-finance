@@ -1,4 +1,5 @@
 package finance.controller;
+import finance.dto.TransactionDTO;
 import finance.entity.Account;
 import finance.entity.Category;
 import finance.entity.Transaction;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -21,12 +23,24 @@ public class TransactionController {
     private final CategoryServiceImpl categoryService;
     private final AccountServiceImpl accountService;
 
-    @GetMapping("/transactions")
-    public String transactions(Model model) {
-        model.addAttribute("transactions", transactionService.getTransactions());
-        model.addAttribute("categories", categoryService.getCategories());
+    private static final int PAGE_SIZE = 10;
 
+    @GetMapping("/transactions")
+    public String transactions(Model model, @RequestParam(defaultValue = "0") int page) {
+        List<TransactionDTO> all = transactionService.getTransactions();
+        addPaginatedAttributes(model, all, page);
+        model.addAttribute("categories", categoryService.getCategories());
         return "transactions";
+    }
+
+    private void addPaginatedAttributes(Model model, List<TransactionDTO> all, int page) {
+        int totalPages = Math.max(1, (int) Math.ceil((double) all.size() / PAGE_SIZE));
+        int safePage = Math.max(0, Math.min(page, totalPages - 1));
+        int from = safePage * PAGE_SIZE;
+        int to = Math.min(from + PAGE_SIZE, all.size());
+        model.addAttribute("transactions", all.subList(from, to));
+        model.addAttribute("currentPage", safePage);
+        model.addAttribute("totalPages", totalPages);
     }
 
     @PostMapping("/transactions")
@@ -84,10 +98,12 @@ public class TransactionController {
 
     @GetMapping("/transactions/search")
     public String search(Model model,
-                         @RequestParam String search){
-
-        model.addAttribute("transactions", transactionService.search(search));
+                         @RequestParam String search,
+                         @RequestParam(defaultValue = "0") int page) {
+        List<TransactionDTO> results = transactionService.search(search);
+        addPaginatedAttributes(model, results, page);
         model.addAttribute("categories", categoryService.getCategories());
+        model.addAttribute("search", search);
         return "transactions";
     }
 }
