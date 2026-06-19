@@ -9,8 +9,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class StockServiceImpl implements StockService {
 
     @Value("${finnhub.api.key}")
@@ -34,16 +36,16 @@ public class StockServiceImpl implements StockService {
             return;
         }
         try {
-            System.out.println("[StockService] Starting refresh...");
+            log.info("Starting refresh...");
             List<StockDTO> stocks = new ArrayList<>();
             for (String ticker : tickers) {
                 String url = "https://finnhub.io/api/v1/quote?symbol=" + ticker + "&token=" + apiKey;
 
                 Map response = restTemplate.getForObject(url, Map.class);
-                System.out.println(ticker + " -> " + response);
+                log.info("{} -> {}", ticker, response);
 
                 if (response == null || !response.containsKey("c")) {
-                    System.err.println("[StockService] No data for " + ticker);
+                    log.warn("No data for {}", ticker);
                     continue;
                 }
 
@@ -52,7 +54,7 @@ public class StockServiceImpl implements StockService {
                 double changePercent = ((Number) response.get("dp")).doubleValue();
 
                 if (price == 0) {
-                    System.err.println("[StockService] Zero price for " + ticker + ", skipping");
+                    log.warn("Zero price for {}, skipping", ticker);
                     continue;
                 }
 
@@ -64,10 +66,9 @@ public class StockServiceImpl implements StockService {
                 stocks.add(new StockDTO(ticker, priceStr, changeStr, changePercentStr, positive));
             }
             cachedStocks = Collections.unmodifiableList(stocks);
-            System.out.println("[StockService] Refresh done, loaded: " + stocks.size() + " stocks");
+            log.info("Refresh done, loaded: {} stocks", stocks.size());
         } catch (Exception e) {
-            System.err.println("[StockService] Refresh failed: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Refresh failed: {}", e.getMessage(), e);
         } finally {
             loading.set(false);
         }

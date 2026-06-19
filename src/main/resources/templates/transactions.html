@@ -30,7 +30,7 @@
       </thead>
       <tbody>
       <tr th:each="transaction : ${transactions}">
-        <td th:text="${transaction.amount}"></td>
+        <td th:text="${#numbers.formatDecimal(transaction.amount, 1, 'WHITESPACE', 0, 'DEFAULT')}"></td>
         <td th:text="${transaction.type == T(finance.entity.TransactionType).INCOME ? 'Доход' : 'Расход'}"></td>
         <td th:text="${transaction.categoryName}"></td>
         <td th:text="${#temporals.format(transaction.date, 'dd.MM.yyyy HH:mm')}"></td>
@@ -50,6 +50,30 @@
       </tr>
       </tbody>
     </table>
+
+    <!-- Пагинация -->
+    <nav th:if="${totalPages > 1}" aria-label="Страницы транзакций" class="mt-3">
+      <ul class="pagination">
+        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+          <a class="page-link"
+             th:href="${search != null} ? @{/transactions/search(search=${search}, page=${currentPage - 1})} : @{/transactions(page=${currentPage - 1})}">
+            &laquo;
+          </a>
+        </li>
+        <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+            class="page-item" th:classappend="${i == currentPage} ? 'active'">
+          <a class="page-link"
+             th:href="${search != null} ? @{/transactions/search(search=${search}, page=${i})} : @{/transactions(page=${i})}"
+             th:text="${i + 1}"></a>
+        </li>
+        <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+          <a class="page-link"
+             th:href="${search != null} ? @{/transactions/search(search=${search}, page=${currentPage + 1})} : @{/transactions(page=${currentPage + 1})}">
+            &raquo;
+          </a>
+        </li>
+      </ul>
+    </nav>
 
     <!-- Модальные окна редактирования -->
     <div th:each="transaction : ${transactions}">
