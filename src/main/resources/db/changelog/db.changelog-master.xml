@@ -11,4 +11,10 @@
     <include file="changes/2026-06-22-add-type-column.xml"
              relativeToChangelogFile="true"/>
 
+    <include file="changes/2026-06-25-17-15-00-add-user-password.xml"
+             relativeToChangelogFile="true"/>
+
+    <include file="changes/2026-06-26-23-04-00-add-Unique-Constraint.xml"
+             relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
