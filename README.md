@@ -4,3 +4,7 @@
 3. Или docker-compose up --build чтобы поднять всё сразу. НО!! Нужно при смене кода писать 
 ./gradlew build
 docker-compose up --build
+
+Spring Security авторизация
+Login: user
+Password: 12cb301b-bbd0-4572-b908-27bb9d0b3ab4
