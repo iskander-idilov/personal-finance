@@ -1,4 +1,5 @@
 package finance.controller;
+import finance.entity.Role;
 import finance.entity.User;
 import finance.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class RegisterController {
                 .name(name)
                 .email(email)
                 .password(passwordEncoder.encode(password))
+                .role(Role.USER)
                 .build();
 
         userRepository.save(user);
