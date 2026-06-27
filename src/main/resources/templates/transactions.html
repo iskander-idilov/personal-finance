@@ -1,111 +1,103 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head}"></head>
 <body>
-<div class="d-flex">
+<div class="au-layout">
   <div th:replace="~{layout :: sidebar}"></div>
-
-  <div class="flex-grow-1 p-4 bg-light">
-    <h1>Транзакции</h1>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTransactionModal">
-      Добавить транзакцию
-    </button>
-
-    <form th:action="@{/transactions/search}" method="get" class="d-flex">
-      <input type="text" name="search" placeholder="Поиск..." class="form-control me-2" style="max-width: 300px;">
-      <button type="submit" class="btn btn-outline-secondary">Найти</button>
-    </form>
+  <main class="au-main">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:24px;" class="au-fade">
+      <div class="au-page-title" style="margin-bottom:0;">Транзакции</div>
+      <div style="display:flex; gap:8px; align-items:center; margin-top:6px;">
+        <form th:action="@{/transactions/search}" method="get" style="display:flex; gap:8px;">
+          <input type="text" name="search" placeholder="Поиск..." class="au-input" style="width:200px;">
+          <button type="submit" class="au-btn au-btn-outline"><i class="bi bi-search"></i></button>
+        </form>
+        <button class="au-btn au-btn-primary" data-bs-toggle="modal" data-bs-target="#addTransactionModal">
+          <i class="bi bi-plus"></i> Добавить
+        </button>
+      </div>
     </div>
 
-    <table class="table table-striped">
-      <thead>
-      <tr>
-        <th>Сумма</th>
-        <th>Тип</th>
-        <th>Категория</th>
-        <th>Дата</th>
-        <th>Действия</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="transaction : ${transactions}">
-        <td th:text="${#numbers.formatDecimal(transaction.amount, 1, 'WHITESPACE', 0, 'DEFAULT')}"></td>
-        <td th:text="${transaction.type == T(finance.entity.TransactionType).INCOME ? 'Доход' : 'Расход'}"></td>
-        <td th:text="${transaction.categoryName}"></td>
-        <td th:text="${#temporals.format(transaction.date, 'dd.MM.yyyy HH:mm')}"></td>
-        <td>
-          <button class="btn btn-sm btn-outline-primary"
-                  data-bs-toggle="modal"
-                  th:data-bs-target="'#editModal' + ${transaction.id}">
-            <i class="bi bi-pencil"></i>
-          </button>
-          <form th:action="@{/transactions/delete}" method="post" class="d-inline">
-            <input type="hidden" name="id" th:value="${transaction.id}">
-            <button type="submit" class="btn btn-sm btn-outline-danger">
-              <i class="bi bi-trash"></i>
-            </button>
-          </form>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+    <div class="au-card au-fade au-fade-d1" style="padding:0; overflow:hidden;">
+      <table class="au-table">
+        <thead><tr><th>Сумма</th><th>Тип</th><th>Категория</th><th>Дата</th><th></th></tr></thead>
+        <tbody>
+          <tr th:each="transaction : ${transactions}">
+            <td style="font-family:var(--mono); font-weight:600;"
+                th:text="${#numbers.formatDecimal(transaction.amount, 1, 'WHITESPACE', 0, 'DEFAULT')} + ' ₸'"></td>
+            <td>
+              <span th:if="${transaction.type == T(finance.entity.TransactionType).INCOME}" class="au-badge au-badge-success">Доход</span>
+              <span th:if="${transaction.type != T(finance.entity.TransactionType).INCOME}" class="au-badge au-badge-danger">Расход</span>
+            </td>
+            <td style="color:var(--muted);" th:text="${transaction.categoryName}"></td>
+            <td style="color:var(--muted2); font-family:var(--mono); font-size:11.5px;"
+                th:text="${#temporals.format(transaction.date, 'dd.MM.yyyy HH:mm')}"></td>
+            <td>
+              <div style="display:flex; gap:5px; justify-content:flex-end; padding-right:4px;">
+                <button class="au-btn au-btn-ghost au-btn-sm" data-bs-toggle="modal"
+                        th:data-bs-target="'#editModal' + ${transaction.id}">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <form th:action="@{/transactions/delete}" method="post" style="display:inline;">
+                  <input type="hidden" name="id" th:value="${transaction.id}">
+                  <button type="submit" class="au-btn au-btn-danger au-btn-sm"><i class="bi bi-trash"></i></button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <!-- Пагинация -->
-    <nav th:if="${totalPages > 1}" aria-label="Страницы транзакций" class="mt-3">
-      <ul class="pagination">
-        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-          <a class="page-link"
-             th:href="${search != null} ? @{/transactions/search(search=${search}, page=${currentPage - 1})} : @{/transactions(page=${currentPage - 1})}">
-            &laquo;
-          </a>
-        </li>
-        <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-            class="page-item" th:classappend="${i == currentPage} ? 'active'">
-          <a class="page-link"
-             th:href="${search != null} ? @{/transactions/search(search=${search}, page=${i})} : @{/transactions(page=${i})}"
-             th:text="${i + 1}"></a>
-        </li>
-        <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-          <a class="page-link"
-             th:href="${search != null} ? @{/transactions/search(search=${search}, page=${currentPage + 1})} : @{/transactions(page=${currentPage + 1})}">
-            &raquo;
-          </a>
-        </li>
-      </ul>
+    <nav th:if="${totalPages > 1}" style="margin-top:16px;" class="au-fade au-fade-d2">
+      <div class="au-pagination">
+        <a class="au-page-btn" th:classappend="${currentPage == 0} ? ' disabled' : ''"
+           th:href="${search != null} ? @{/transactions/search(search=${search}, page=${currentPage - 1})} : @{/transactions(page=${currentPage - 1})}">
+          <i class="bi bi-chevron-left"></i>
+        </a>
+        <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="au-page-btn"
+           th:classappend="${i == currentPage} ? ' active' : ''"
+           th:href="${search != null} ? @{/transactions/search(search=${search}, page=${i})} : @{/transactions(page=${i})}"
+           th:text="${i + 1}">1</a>
+        <a class="au-page-btn" th:classappend="${currentPage == totalPages - 1} ? ' disabled' : ''"
+           th:href="${search != null} ? @{/transactions/search(search=${search}, page=${currentPage + 1})} : @{/transactions(page=${currentPage + 1})}">
+          <i class="bi bi-chevron-right"></i>
+        </a>
+      </div>
     </nav>
 
-    <!-- Модальные окна редактирования -->
+    <!-- Edit Modals -->
     <div th:each="transaction : ${transactions}">
-      <div class="modal fade" th:id="'editModal' + ${transaction.id}" tabindex="-1">
-        <div class="modal-dialog">
+      <div class="modal fade au-modal" th:id="'editModal' + ${transaction.id}" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Редактировать транзакцию</h5>
+              <span class="modal-title">Редактировать транзакцию</span>
               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
               <form th:action="@{/transactions/edit}" method="post">
                 <input type="hidden" name="id" th:value="${transaction.id}">
-                <select name="type"
-                        th:id="'editType' + ${transaction.id}"
-                        class="form-control mb-3"
-                        th:onchange="'filterEditCategories(' + ${transaction.id} + ')'">
-                  <option value="INCOME" th:selected="${transaction.type.name() == 'INCOME'}">Доход</option>
-                  <option value="EXPENSE" th:selected="${transaction.type.name() == 'EXPENSE'}">Расход</option>
-                </select>
-                <select name="categoryId"
-                        th:id="'editCategory' + ${transaction.id}"
-                        class="form-control mb-3">
-                  <option th:each="category : ${categories}"
-                          th:value="${category.id}"
-                          th:text="${category.name}"
-                          th:attr="data-type=${category.type}"
-                          th:selected="${category.id == transaction.categoryId}">
-                  </option>
-                </select>
-                <input type="number" name="amount" th:value="${transaction.amount}" class="form-control mb-3" required>
-                <button type="submit" class="btn btn-primary w-100">Сохранить</button>
+                <div class="au-form-group">
+                  <label class="au-label">Тип</label>
+                  <select name="type" th:id="'editType' + ${transaction.id}" class="au-select"
+                          th:onchange="'filterEditCategories(' + ${transaction.id} + ')'">
+                    <option value="INCOME" th:selected="${transaction.type.name() == 'INCOME'}">Доход</option>
+                    <option value="EXPENSE" th:selected="${transaction.type.name() == 'EXPENSE'}">Расход</option>
+                  </select>
+                </div>
+                <div class="au-form-group">
+                  <label class="au-label">Категория</label>
+                  <select name="categoryId" th:id="'editCategory' + ${transaction.id}" class="au-select">
+                    <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"
+                            th:attr="data-type=${category.type}" th:selected="${category.id == transaction.categoryId}"></option>
+                  </select>
+                </div>
+                <div class="au-form-group">
+                  <label class="au-label">Сумма (₸)</label>
+                  <input type="number" name="amount" th:value="${transaction.amount}" class="au-input" required>
+                </div>
+                <button type="submit" class="au-btn au-btn-primary" style="width:100%; justify-content:center;">Сохранить</button>
               </form>
             </div>
           </div>
@@ -113,88 +105,76 @@
       </div>
     </div>
 
-    <!-- Модальное окно добавления -->
-    <div class="modal fade" id="addTransactionModal" tabindex="-1"
-         data-bs-event="shown.bs.modal">
-      <div class="modal-dialog">
+    <!-- Add Modal -->
+    <div class="modal fade au-modal" id="addTransactionModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Добавить транзакцию</h5>
+            <span class="modal-title">Новая транзакция</span>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
             <form th:action="@{/transactions}" method="post">
-              <select name="type" id="typeSelect" class="form-control mb-3" onchange="filterCategories()">
-                <option value="INCOME">Доход</option>
-                <option value="EXPENSE">Расход</option>
-              </select>
-              <select name="categoryId" id="categorySelect" class="form-control mb-3">
-                <option th:each="category : ${categories}"
-                        th:value="${category.id}"
-                        th:text="${category.name}"
-                        th:attr="data-type=${category.type}">
-                </option>
-              </select>
-              <input type="text" name="amount" placeholder="Введите сумму" class="form-control mb-3" required>
-              <button type="submit" class="btn btn-success w-100">Добавить</button>
+              <div class="au-form-group">
+                <label class="au-label">Тип</label>
+                <select name="type" id="typeSelect" class="au-select" onchange="filterCategories()">
+                  <option value="INCOME">Доход</option>
+                  <option value="EXPENSE">Расход</option>
+                </select>
+              </div>
+              <div class="au-form-group">
+                <label class="au-label">Категория</label>
+                <select name="categoryId" id="categorySelect" class="au-select">
+                  <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"
+                          th:attr="data-type=${category.type}"></option>
+                </select>
+              </div>
+              <div class="au-form-group">
+                <label class="au-label">Сумма (₸)</label>
+                <input type="text" name="amount" placeholder="0.00" class="au-input" required>
+              </div>
+              <button type="submit" class="au-btn au-btn-primary" style="width:100%; justify-content:center;">
+                <i class="bi bi-plus"></i> Добавить
+              </button>
             </form>
           </div>
         </div>
       </div>
     </div>
-
-  </div>
+  </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   let allCategories = [];
-
   window.onload = function() {
     const select = document.getElementById('categorySelect');
-    allCategories = Array.from(select.options).map(opt => ({
-      value: opt.value,
-      text: opt.text,
-      type: opt.dataset.type
-    }));
+    allCategories = Array.from(select.options).map(opt => ({ value: opt.value, text: opt.text, type: opt.dataset.type }));
     filterCategories();
   };
-
   function filterCategories() {
     const type = document.getElementById('typeSelect').value;
     const select = document.getElementById('categorySelect');
     select.innerHTML = '';
     allCategories.filter(c => c.type === type).forEach(c => {
-      const option = document.createElement('option');
-      option.value = c.value;
-      option.text = c.text;
-      select.appendChild(option);
+      const o = document.createElement('option'); o.value = c.value; o.text = c.text; select.appendChild(o);
     });
   }
-
-  function filterEditCategories(transactionId, selectedCategoryId) {
-    const type = document.getElementById('editType' + transactionId).value;
-    const select = document.getElementById('editCategory' + transactionId);
-    const current = selectedCategoryId || (select.options[select.selectedIndex] && select.options[select.selectedIndex].value);
+  function filterEditCategories(id, selectedId) {
+    const type = document.getElementById('editType' + id).value;
+    const select = document.getElementById('editCategory' + id);
+    const current = selectedId || (select.options[select.selectedIndex] && select.options[select.selectedIndex].value);
     select.innerHTML = '';
     allCategories.filter(c => c.type === type).forEach(c => {
-      const option = document.createElement('option');
-      option.value = c.value;
-      option.text = c.text;
-      if (c.value === current) option.selected = true;
-      select.appendChild(option);
+      const o = document.createElement('option'); o.value = c.value; o.text = c.text;
+      if (c.value === current) o.selected = true; select.appendChild(o);
     });
   }
-
-  document.getElementById('addTransactionModal').addEventListener('shown.bs.modal', function() {
-    filterCategories();
-  });
-
-  document.querySelectorAll('[id^="editModal"]').forEach(function(modal) {
+  document.getElementById('addTransactionModal').addEventListener('shown.bs.modal', filterCategories);
+  document.querySelectorAll('[id^="editModal"]').forEach(modal => {
     modal.addEventListener('shown.bs.modal', function() {
-      const transactionId = modal.id.replace('editModal', '');
-      const categorySelect = document.getElementById('editCategory' + transactionId);
-      const selectedCategoryId = categorySelect ? categorySelect.value : null;
-      filterEditCategories(transactionId, selectedCategoryId);
+      const id = modal.id.replace('editModal', '');
+      const sel = document.getElementById('editCategory' + id);
+      filterEditCategories(id, sel ? sel.value : null);
     });
   });
 </script>

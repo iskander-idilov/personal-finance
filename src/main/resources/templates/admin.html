@@ -2,31 +2,24 @@
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head}"></head>
 <body>
-<div class="d-flex">
+<div class="au-layout">
   <div th:replace="~{layout :: sidebar}"></div>
-
-  <div class="flex-grow-1 p-4 bg-light">
-    <h1 class="mb-4">Список пользователей</h1>
-
-    <table class="table table-striped bg-white shadow-sm rounded">
-      <thead>
-      <tr>
-        <th>ID</th>
-        <th>Имя</th>
-        <th>Email</th>
-        <th>Роль</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="user : ${users}">
-        <td th:text="${user.id}"></td>
-        <td th:text="${user.name}"></td>
-        <td th:text="${user.email}"></td>
-        <td th:text="${user.role}"></td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+  <main class="au-main">
+    <div class="au-page-title au-fade">Пользователи</div>
+    <div class="au-card au-fade au-fade-d1" style="padding:0; overflow:hidden;">
+      <table class="au-table">
+        <thead><tr><th>#</th><th>Имя</th><th>Email</th><th>Роль</th></tr></thead>
+        <tbody>
+          <tr th:each="user : ${users}">
+            <td style="font-family:var(--mono); color:var(--muted2);" th:text="${user.id}"></td>
+            <td style="font-weight:500;" th:text="${user.name}"></td>
+            <td style="color:var(--muted);" th:text="${user.email}"></td>
+            <td><span class="au-badge au-badge-gold" th:text="${user.role}"></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

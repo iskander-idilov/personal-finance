@@ -1,85 +1,90 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head}"></head>
 <body>
-<div class="d-flex">
+<div class="au-layout">
   <div th:replace="~{layout :: sidebar}"></div>
+  <main class="au-main">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:24px;" class="au-fade">
+      <div class="au-page-title" style="margin-bottom:0;">Категории</div>
+      <button class="au-btn au-btn-primary" style="margin-top:6px;" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+        <i class="bi bi-plus"></i> Добавить
+      </button>
+    </div>
+    <div th:if="${error}" class="au-alert au-alert-danger au-fade" th:text="${error}"></div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px,1fr)); gap:10px;">
+      <div th:each="category, iter : ${categories}"
+           class="au-card au-fade"
+           th:style="'animation-delay:' + ${iter.index * 0.04} + 's'"
+           style="padding:14px 16px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:30px; height:30px; border-radius:7px; background:var(--cream2);
+                      display:flex; align-items:center; justify-content:center;">
+            <i th:if="${category.icon}" th:class="'bi ' + ${category.icon}" style="color:var(--gold); font-size:14px;"></i>
+            <i th:if="${category.icon == null}" class="bi bi-tag" style="color:var(--gold); font-size:14px;"></i>
+          </div>
+          <span style="font-size:13.5px;" th:text="${category.name}"></span>
+        </div>
+        <div style="display:flex; gap:4px;" th:style="${category.default} ? 'visibility:hidden' : ''">
+          <button class="au-btn au-btn-ghost au-btn-sm" data-bs-toggle="modal"
+                  th:data-bs-target="'#editModal' + ${category.id}">
+            <i class="bi bi-pencil" style="font-size:11px;"></i>
+          </button>
+          <form th:action="@{/categories/delete}" method="post" style="display:inline;">
+            <input type="hidden" name="id" th:value="${category.id}">
+            <button type="submit" class="au-btn au-btn-danger au-btn-sm"><i class="bi bi-trash" style="font-size:11px;"></i></button>
+          </form>
+        </div>
+      </div>
+    </div>
 
-  <div class="flex-grow-1 p-4 bg-light">
-    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-
-    <h1>Категории</h1>
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
-      Добавить категорию
-    </button>
-
-    <div class="row">
-      <div class="col-md-3 mb-3" th:each="category : ${categories}">
-        <div class="card shadow-sm h-100">
-          <div class="card-body d-flex align-items-center justify-content-between">
-            <div class="d-flex align-items-center gap-2">
-              <i th:if="${category.icon}" th:class="'bi ' + ${category.icon} + ' fs-5'"></i>
-              <span th:text="${category.name}"></span>
+    <!-- Edit modals -->
+    <div th:each="category : ${categories}">
+      <div class="modal fade au-modal" th:id="'editModal' + ${category.id}" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <span class="modal-title">Редактировать категорию</span>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="d-flex gap-2">
-              <button th:style="${category.default} ? 'visibility: hidden' : ''"
-                      class="btn btn-sm btn-outline-primary"
-                      data-bs-toggle="modal"
-                      th:data-bs-target="'#editModal' + ${category.id}">
-                <i class="bi bi-pencil"></i>
-              </button>
-              <form th:style="${category.default} ? 'visibility: hidden' : ''"
-                    th:action="@{/categories/delete}" method="post">
+            <div class="modal-body">
+              <form th:action="@{/categories/edit}" method="post">
                 <input type="hidden" name="id" th:value="${category.id}">
-                <button type="submit" class="btn btn-sm btn-outline-danger">
-                  <i class="bi bi-trash"></i>
-                </button>
+                <div class="au-form-group">
+                  <label class="au-label">Название</label>
+                  <input type="text" name="name" th:value="${category.name}" class="au-input" required>
+                </div>
+                <button type="submit" class="au-btn au-btn-primary" style="width:100%; justify-content:center;">Сохранить</button>
               </form>
             </div>
           </div>
         </div>
-
-        <!-- Модальное окно редактирования для каждой карточки -->
-        <div class="modal fade" th:id="'editModal' + ${category.id}" tabindex="-1">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Редактировать категорию</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-              </div>
-              <div class="modal-body">
-                <form th:action="@{/categories/edit}" method="post">
-                  <input type="hidden" name="id" th:value="${category.id}">
-                  <input type="text" name="name" th:value="${category.name}" class="form-control mb-3" required>
-                  <button type="submit" class="btn btn-primary w-100">Сохранить</button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
 
-    <!-- Модальное окно добавления -->
-    <div class="modal fade" id="addCategoryModal" tabindex="-1">
-      <div class="modal-dialog">
+    <!-- Add modal -->
+    <div class="modal fade au-modal" id="addCategoryModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Добавить категорию</h5>
+            <span class="modal-title">Новая категория</span>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
             <form th:action="@{/categories}" method="post">
-              <input type="text" name="name" placeholder="Название категории" class="form-control mb-3" required>
-              <button type="submit" class="btn btn-success w-100">Добавить</button>
+              <div class="au-form-group">
+                <label class="au-label">Название</label>
+                <input type="text" name="name" placeholder="Название категории" class="au-input" required>
+              </div>
+              <button type="submit" class="au-btn au-btn-primary" style="width:100%; justify-content:center;">
+                <i class="bi bi-plus"></i> Добавить
+              </button>
             </form>
           </div>
         </div>
       </div>
     </div>
-
-  </div>
+  </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
