@@ -12,12 +12,11 @@
       </button>
     </div>
     <div th:if="${error}" class="au-alert au-alert-danger au-fade" th:text="${error}"></div>
-    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:10px;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px,1fr)); gap:10px;">
       <div th:each="category, iter : ${categories}"
            class="au-card au-fade"
-           th:style="'animation-delay:' + ${iter.index * 0.04} + 's'"
-           style="padding:14px 16px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:nowrap;">
-        <div style="display:flex; align-items:center; gap:10px; min-width:0; overflow:hidden; flex:1;">
+           th:style="'animation-delay:' + ${iter.index * 0.04} + 's; padding:14px 16px 44px; position:relative; min-height:80px;'">
+        <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
           <div style="width:30px; height:30px; border-radius:7px; background:var(--cream2);
                       display:flex; align-items:center; justify-content:center; flex-shrink:0;">
             <i th:if="${category.icon}" th:class="'bi ' + ${category.icon}" style="color:var(--gold); font-size:14px;"></i>
@@ -26,7 +25,7 @@
           <span style="font-size:13.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
                 th:text="${category.name}" th:title="${category.name}"></span>
         </div>
-        <div style="display:flex; gap:4px; flex-shrink:0;" th:style="${category.default} ? 'visibility:hidden' : ''">
+        <div th:style="'display:flex; gap:4px; position:absolute; bottom:10px; right:10px;' + (${category.default} ? ' visibility:hidden;' : '')">
           <button class="au-btn au-btn-ghost au-btn-sm" data-bs-toggle="modal"
                   th:data-bs-target="'#editModal' + ${category.id}">
             <i class="bi bi-pencil" style="font-size:11px;"></i>
