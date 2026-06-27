@@ -1,4 +1,5 @@
 package finance.security;
+import finance.entity.Role;
 import finance.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import finance.entity.User;
@@ -19,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getName())
                 .password(user.getPassword())
-                .roles("USER")
+                .roles(user.getRole().name())
                 .build();
     }
 }

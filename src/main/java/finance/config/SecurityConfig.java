@@ -1,4 +1,5 @@
 package finance.config;
+import finance.entity.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,9 +17,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register").permitAll()
                         .requestMatchers("/login").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form.permitAll());
+                .formLogin(form -> form.permitAll())
+                .exceptionHandling(ex -> ex.accessDeniedPage("/access-denied"));
 
         return http.build();
     }

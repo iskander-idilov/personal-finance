@@ -9,8 +9,8 @@
 <body>
 <div class="d-flex">
   <!-- Боковое меню -->
-  <div th:fragment="sidebar" class="bg-white border-end" style="width: 250px; min-height: 100vh;">
-    <div class="p-4">
+  <div th:fragment="sidebar" class="bg-white border-end d-flex flex-column" style="width: 250px; min-height: 100vh;">
+    <div class="p-4 d-flex flex-column" style="flex: 1;">
       <img th:src="@{/images/logo.png}" alt="AURUM" style="width: 200px; margin-bottom: 10px;">
       <nav class="mt-4">
         <a href="/" th:classappend="${currentUri == '/'} ? ' fw-bold text-primary' : ''"
@@ -33,6 +33,13 @@
           <i class="bi bi-gear me-2"></i>Настройки
         </a>
       </nav>
+
+      <form th:action="@{/logout}" method="post" class="mt-auto">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <button type="submit" class="btn btn-link text-danger text-decoration-none p-0">
+          <i class="bi bi-box-arrow-right me-2"></i>Выход
+        </button>
+      </form>
     </div>
   </div>
 
