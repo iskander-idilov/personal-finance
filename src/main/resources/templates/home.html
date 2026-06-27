@@ -1,150 +1,154 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head}"></head>
 <body>
-<div class="d-flex">
-    <div th:replace="~{layout :: sidebar}"></div>
+<div class="au-layout">
+  <div th:replace="~{layout :: sidebar}"></div>
 
-    <div class="flex-grow-1 p-4 bg-light">
-        <h1 class="mb-4">Добро пожаловать!</h1>
+  <main class="au-main">
+    <div class="au-page-title au-fade">Добро пожаловать</div>
 
-        <!-- Карточки -->
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h6 class="text-muted">Текущий баланс</h6>
-                        <h3 th:text="${#numbers.formatDecimal(account.balance, 1, 'WHITESPACE', 0, 'DEFAULT')}"></h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h6 class="text-muted">Общий доход</h6>
-                        <h3 class="text-success" th:text="${#numbers.formatDecimal(totalIncome, 1, 'WHITESPACE', 0, 'DEFAULT')}"></h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h6 class="text-muted">Общий расход</h6>
-                        <h3 class="text-danger" th:text="${#numbers.formatDecimal(totalExpense, 1, 'WHITESPACE', 0, 'DEFAULT')}"></h3>
-                    </div>
-                </div>
-            </div>
+    <!-- Stat Cards -->
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px;">
+      <div class="au-card au-fade au-fade-d1">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div class="au-stat-label">Баланс</div>
+            <div class="au-stat-value"
+                 th:text="${#numbers.formatDecimal(account.balance, 1, 'WHITESPACE', 0, 'DEFAULT')}">0</div>
+            <div class="au-stat-sub">₸ KZT</div>
+          </div>
+          <div class="au-stat-icon" style="background:var(--gold-bg);">
+            <i class="bi bi-wallet2" style="color:var(--gold);"></i>
+          </div>
         </div>
+      </div>
 
-        <!-- Диаграмма и транзакции -->
-        <div class="row align-items-stretch">
-            <div class="col-md-5">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">Расходы по категориям</h5>
-                        <div style="height: 400px;">
-                            <canvas id="expensesChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-7">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title mb-3">Последние транзакции</h5>
-                        <div style="overflow-y: auto; max-height: 400px;">
-                            <table class="table table-striped">
-                                <thead>
-                                <tr>
-                                    <th>Сумма</th>
-                                    <th>Тип</th>
-                                    <th>Категория</th>
-                                    <th>Дата</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="transaction : ${transactions}">
-                                    <td th:text="${#numbers.formatDecimal(transaction.amount, 1, 'WHITESPACE', 0, 'DEFAULT')}"></td>
-                                    <td th:text="${transaction.type == T(finance.entity.TransactionType).INCOME ? 'Доход' : 'Расход'}"></td>
-                                    <td th:text="${transaction.categoryName}"></td>
-                                    <td th:text="${#temporals.format(transaction.date, 'dd.MM.yyyy HH:mm')}"></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div class="au-card au-fade au-fade-d2">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div class="au-stat-label">Доход</div>
+            <div class="au-stat-value" style="color:var(--success);"
+                 th:text="${#numbers.formatDecimal(totalIncome, 1, 'WHITESPACE', 0, 'DEFAULT')}">0</div>
+            <div class="au-stat-sub">За всё время</div>
+          </div>
+          <div class="au-stat-icon" style="background:rgba(45,125,82,0.09);">
+            <i class="bi bi-graph-up-arrow" style="color:var(--success);"></i>
+          </div>
         </div>
+      </div>
 
-        <!-- Акции -->
-        <div class="card shadow-sm mt-4">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Рынок</h5>
-                <div th:if="${#lists.isEmpty(stocks)}" class="text-muted">
-                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                    Данные загружаются...
-                </div>
-                <table th:if="${not #lists.isEmpty(stocks)}" class="table table-borderless">
-                    <thead>
-                    <tr>
-                        <th>Тикер</th>
-                        <th>Цена</th>
-                        <th>Изменение</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="stock : ${stocks}">
-                        <td><strong th:text="${stock.ticker}"></strong></td>
-                        <td th:text="${stock.price}"></td>
-                        <td>
-                            <span th:class="${stock.positive} ? 'badge bg-success' : 'badge bg-danger'"
-                                  th:text="${stock.changePercent}">
-                            </span>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+      <div class="au-card au-fade au-fade-d3">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div class="au-stat-label">Расход</div>
+            <div class="au-stat-value" style="color:var(--danger);"
+                 th:text="${#numbers.formatDecimal(totalExpense, 1, 'WHITESPACE', 0, 'DEFAULT')}">0</div>
+            <div class="au-stat-sub">За всё время</div>
+          </div>
+          <div class="au-stat-icon" style="background:rgba(192,57,43,0.08);">
+            <i class="bi bi-graph-down-arrow" style="color:var(--danger);"></i>
+          </div>
         </div>
-
+      </div>
     </div>
+
+    <!-- Chart + Transactions -->
+    <div style="display:grid; grid-template-columns:5fr 7fr; gap:14px; margin-bottom:14px;">
+      <div class="au-card au-fade au-fade-d3">
+        <div class="au-section-title">По категориям</div>
+        <div style="height:300px; display:flex; align-items:center; justify-content:center;">
+          <canvas id="expensesChart"></canvas>
+        </div>
+      </div>
+
+      <div class="au-card au-fade au-fade-d4" style="padding:0; overflow:hidden;">
+        <div style="padding:18px 20px 12px;">
+          <div class="au-section-title" style="margin-bottom:0;">Последние транзакции</div>
+        </div>
+        <div style="overflow-y:auto; max-height:320px;">
+          <table class="au-table">
+            <thead>
+              <tr><th>Сумма</th><th>Тип</th><th>Категория</th><th>Дата</th></tr>
+            </thead>
+            <tbody>
+              <tr th:each="transaction : ${transactions}">
+                <td style="font-family:var(--mono); font-weight:600;"
+                    th:text="${#numbers.formatDecimal(transaction.amount, 1, 'WHITESPACE', 0, 'DEFAULT')} + ' ₸'"></td>
+                <td>
+                  <span th:if="${transaction.type == T(finance.entity.TransactionType).INCOME}" class="au-badge au-badge-success">Доход</span>
+                  <span th:if="${transaction.type != T(finance.entity.TransactionType).INCOME}" class="au-badge au-badge-danger">Расход</span>
+                </td>
+                <td style="color:var(--muted);" th:text="${transaction.categoryName}"></td>
+                <td style="color:var(--muted2); font-family:var(--mono); font-size:11.5px;"
+                    th:text="${#temporals.format(transaction.date, 'dd.MM.yyyy')}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Market -->
+    <div class="au-card au-fade au-fade-d4" style="padding:0; overflow:hidden;">
+      <div style="padding:16px 20px 10px;">
+        <div class="au-section-title" style="margin-bottom:0;">Рынок</div>
+      </div>
+      <div th:if="${#lists.isEmpty(stocks)}" style="display:flex; align-items:center; gap:10px; color:var(--muted2); padding:16px 20px;">
+        <span class="au-spinner"></span> Данные загружаются...
+      </div>
+      <table th:if="${not #lists.isEmpty(stocks)}" class="au-table">
+        <thead><tr><th>Тикер</th><th>Цена</th><th>Изменение</th></tr></thead>
+        <tbody>
+          <tr th:each="stock : ${stocks}">
+            <td style="font-family:var(--mono); font-weight:600;" th:text="${stock.ticker}"></td>
+            <td style="font-family:var(--mono); color:var(--muted);" th:text="${stock.price}"></td>
+            <td>
+              <span th:if="${stock.positive}"  class="au-badge au-badge-success" th:text="${stock.changePercent}"></span>
+              <span th:if="${!stock.positive}" class="au-badge au-badge-danger"  th:text="${stock.changePercent}"></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script th:inline="javascript">
-    const data = /*[[${expensesByCategory}]]*/ {};
-    const labels = Object.keys(data);
-    const values = Object.values(data);
+  const data   = /*[[${expensesByCategory}]]*/ {};
+  const labels = Object.keys(data);
+  const values = Object.values(data);
+  const hasData = values.length > 0;
 
-    const hasData = values.length > 0;
-
-    new Chart(document.getElementById('expensesChart'), {
-        type: 'doughnut',
-        data: {
-            labels: hasData ? labels : ['Нет данных'],
-            datasets: [{
-                data: hasData ? values : [1],
-                backgroundColor: hasData ? [
-                    '#4CAF50', '#2196F3', '#FF9800', '#F44336', '#9C27B0',
-                    '#00BCD4', '#FF5722', '#607D8B', '#E91E63', '#3F51B5'
-                ] : ['#e0e0e0']
-            }]
+  new Chart(document.getElementById('expensesChart'), {
+    type: 'doughnut',
+    data: {
+      labels: hasData ? labels : ['Нет данных'],
+      datasets: [{
+        data: hasData ? values : [1],
+        backgroundColor: hasData
+          ? ['#c9a84c','#2d7d52','#2563eb','#c0392b','#8a8070','#e8a838','#5b8dd9','#4aab7a','#d46f3e','#9b7dc9']
+          : ['#e5ddd1'],
+        borderWidth: 0, hoverOffset: 4
+      }]
+    },
+    options: {
+      maintainAspectRatio: false, cutout: '68%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: '#8a8070', font: { family: 'DM Sans', size: 11 }, padding: 14, boxWidth: 9, boxHeight: 9, borderRadius: 3 }
         },
-        options: {
-            maintainAspectRatio: false,
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            if (!hasData) return 'Нет данных';
-                            return context.label + ': ' + context.parsed;
-                        }
-                    }
-                }
-            }
+        tooltip: {
+          backgroundColor: '#fff', borderColor: 'rgba(28,26,23,0.10)', borderWidth: 1,
+          titleColor: '#1c1a17', bodyColor: '#8a8070',
+          callbacks: { label: ctx => hasData ? ' ' + ctx.label + ': ' + ctx.parsed + ' ₸' : ' Нет данных' }
         }
-    });
+      }
+    }
+  });
 </script>
 </body>
 </html>

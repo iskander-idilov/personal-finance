@@ -2,78 +2,36 @@
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout :: head}"></head>
 <body>
-<div class="d-flex">
-    <div th:replace="~{layout :: sidebar}"></div>
-
-    <div class="flex-grow-1 p-4 bg-light">
-        <h1 class="mb-4">Настройки</h1>
-
-        <div class="row g-4" style="max-width: 1050px;">
-            <!-- Смена пароля -->
-            <div class="col-md-6">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <h5 class="card-title mb-4">Смена пароля</h5>
-
-                        <div th:if="${param.passwordError}" class="alert alert-danger" role="alert">
-                            Неверный текущий пароль или пароли не совпадают.
-                        </div>
-                        <div th:if="${param.passwordSuccess}" class="alert alert-success" role="alert">
-                            Пароль успешно изменён.
-                        </div>
-
-                        <form th:action="@{/settings/password}" method="post">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
-                            <div class="mb-3">
-                                <label class="form-label">Текущий пароль</label>
-                                <input type="password" name="oldPassword" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Новый пароль</label>
-                                <input type="password" name="newPassword" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Повторите новый пароль</label>
-                                <input type="password" name="confirmPassword" class="form-control" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Сохранить</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Смена email -->
-            <div class="col-md-6">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <h5 class="card-title mb-4">Смена email</h5>
-
-                        <div th:if="${param.emailError}" class="alert alert-danger" role="alert">
-                            Неверный пароль.
-                        </div>
-                        <div th:if="${param.emailSuccess}" class="alert alert-success" role="alert">
-                            Email успешно изменён.
-                        </div>
-
-                        <form th:action="@{/settings/email}" method="post">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
-                            <div class="mb-3">
-                                <label class="form-label">Новый email</label>
-                                <input type="email" name="newEmail" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Подтвердите пароль</label>
-                                <input type="password" name="password" class="form-control" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Сохранить</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="au-layout">
+  <div th:replace="~{layout :: sidebar}"></div>
+  <main class="au-main">
+    <div class="au-page-title au-fade">Настройки</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; max-width:860px;">
+      <div class="au-card au-fade au-fade-d1">
+        <div class="au-section-title"><i class="bi bi-key" style="margin-right:5px; color:var(--gold);"></i>Смена пароля</div>
+        <div th:if="${param.passwordError}" class="au-alert au-alert-danger">Неверный текущий пароль или пароли не совпадают.</div>
+        <div th:if="${param.passwordSuccess}" class="au-alert au-alert-success">Пароль успешно изменён.</div>
+        <form th:action="@{/settings/password}" method="post">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          <div class="au-form-group"><label class="au-label">Текущий пароль</label><input type="password" name="oldPassword" class="au-input" placeholder="••••••••" required></div>
+          <div class="au-form-group"><label class="au-label">Новый пароль</label><input type="password" name="newPassword" class="au-input" placeholder="••••••••" required></div>
+          <div class="au-form-group"><label class="au-label">Повторите пароль</label><input type="password" name="confirmPassword" class="au-input" placeholder="••••••••" required></div>
+          <button type="submit" class="au-btn au-btn-primary">Сохранить</button>
+        </form>
+      </div>
+      <div class="au-card au-fade au-fade-d2">
+        <div class="au-section-title"><i class="bi bi-envelope" style="margin-right:5px; color:var(--gold);"></i>Смена email</div>
+        <div th:if="${param.emailError}" class="au-alert au-alert-danger">Неверный пароль.</div>
+        <div th:if="${param.emailSuccess}" class="au-alert au-alert-success">Email успешно изменён.</div>
+        <form th:action="@{/settings/email}" method="post">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          <div class="au-form-group"><label class="au-label">Новый email</label><input type="email" name="newEmail" class="au-input" placeholder="you@example.com" required></div>
+          <div class="au-form-group"><label class="au-label">Подтвердите пароль</label><input type="password" name="password" class="au-input" placeholder="••••••••" required></div>
+          <button type="submit" class="au-btn au-btn-primary">Сохранить</button>
+        </form>
+      </div>
     </div>
+  </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
