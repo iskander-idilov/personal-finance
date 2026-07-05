@@ -26,4 +26,7 @@
     <include file="changes/2026-06-27-15-23-00-update-role-iskander-admin.xml"
              relativeToChangelogFile="true"/>
 
+    <include file="changes/2026-07-06-00-52-00-add-category-user.xml"
+             relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

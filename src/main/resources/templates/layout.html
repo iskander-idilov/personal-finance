@@ -42,7 +42,8 @@
 
     /* ── Layout ── */
     .au-layout { display: flex; min-height: 100vh; }
-    .au-main   { flex: 1; padding: 32px; background: var(--cream); overflow-x: hidden; }
+    .au-main   { flex: 1; padding: 32px; background: var(--cream); }
+    body       { overflow-x: hidden; }
 
     /* ── Sidebar ── */
     .au-sidebar {
@@ -194,6 +195,9 @@
     .au-page-btn:hover { border-color: var(--dark); color: var(--dark); }
     .au-page-btn.active { background: var(--dark); border-color: var(--dark); color: #fff; }
     .au-page-btn.disabled { opacity: 0.35; pointer-events: none; }
+
+    /* ── Dropdown fix ── */
+    .dropdown-menu.show { z-index: 99999 !important; position: fixed !important; }
 
     /* ── Animations ── */
     @keyframes au-fade-up {

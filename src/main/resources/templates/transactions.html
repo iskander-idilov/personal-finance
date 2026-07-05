@@ -9,16 +9,22 @@
       <div class="au-page-title" style="margin-bottom:0;">Транзакции</div>
       <div style="display:flex; gap:8px; align-items:center; margin-top:6px;">
         <form th:action="@{/transactions/search}" method="get" style="display:flex; gap:8px;">
-          <input type="text" name="search" placeholder="Поиск..." class="au-input" style="width:200px;">
+          <input type="text" name="search" placeholder="Поиск..." class="au-input" style="width:180px;">
           <button type="submit" class="au-btn au-btn-outline"><i class="bi bi-search"></i></button>
         </form>
+        <a th:href="@{/transactions/export(period='all')}" class="au-btn au-btn-outline">
+          <i class="bi bi-download"></i> Все
+        </a>
+        <a th:href="@{/transactions/export(period='week')}" class="au-btn au-btn-outline">
+          <i class="bi bi-download"></i> Неделя
+        </a>
         <button class="au-btn au-btn-primary" data-bs-toggle="modal" data-bs-target="#addTransactionModal">
           <i class="bi bi-plus"></i> Добавить
         </button>
       </div>
     </div>
 
-    <div class="au-card au-fade au-fade-d1" style="padding:0; overflow:hidden;">
+    <div class="au-card au-fade au-fade-d1" style="padding:0; overflow:visible;">
       <table class="au-table">
         <thead><tr><th>Сумма</th><th>Тип</th><th>Категория</th><th>Дата</th><th></th></tr></thead>
         <tbody>

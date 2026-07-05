@@ -1,6 +1,8 @@
 package finance.controller;
+import finance.entity.Account;
 import finance.entity.Role;
 import finance.entity.User;
+import finance.repository.AccountRepository;
 import finance.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class RegisterController {
     private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping(value = "/register")
@@ -37,6 +40,12 @@ public class RegisterController {
                 .build();
 
         userRepository.save(user);
+
+        Account account = Account.builder()
+                .balance(0)
+                .user(user)
+                .build();
+        accountRepository.save(account);
 
         return "redirect:/login";
     }

@@ -1,8 +1,5 @@
 package finance.entity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import java.io.Serializable;
 
@@ -19,4 +16,6 @@ public class Category implements Serializable {
     private TransactionType type;
     private boolean isDefault;
     private String icon;
+    @ManyToOne
+    private User user;
 }

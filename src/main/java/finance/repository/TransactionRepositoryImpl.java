@@ -1,4 +1,5 @@
 package finance.repository;
+import finance.entity.Account;
 import finance.entity.Transaction;
 import finance.entity.TransactionType;
 import jakarta.persistence.EntityManager;
@@ -18,12 +19,13 @@ public class TransactionRepositoryImpl implements TransactionRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public List<Transaction> findWithFilters(TransactionType type, Long categoryId) {
+    public List<Transaction> findWithFilters(Account account, TransactionType type, Long categoryId) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Transaction> query = cb.createQuery(Transaction.class);
         Root<Transaction> root = query.from(Transaction.class);
 
         List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(root.get("account"), account));
 
         if (type != null) {
             predicates.add(cb.equal(root.get("type"), type));

@@ -1,4 +1,5 @@
 package finance.controller;
+import com.opencsv.CSVWriter;
 import finance.dto.TransactionDTO;
 import finance.entity.Account;
 import finance.entity.Category;
@@ -7,13 +8,16 @@ import finance.entity.TransactionType;
 import finance.service.impl.AccountServiceImpl;
 import finance.service.impl.CategoryServiceImpl;
 import finance.service.impl.TransactionServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -94,6 +98,38 @@ public class TransactionController {
         }
 
         return "redirect:/transactions";
+    }
+
+    @GetMapping("/transactions/export")
+    public void exportCsv(@RequestParam(defaultValue = "all") String period,
+                          HttpServletResponse response) throws IOException {
+        List<TransactionDTO> transactions = transactionService.getTransactions();
+
+        if ("week".equals(period)) {
+            LocalDateTime weekAgo = LocalDateTime.now().minusWeeks(1);
+            transactions = transactions.stream()
+                    .filter(t -> t.getDate() != null && t.getDate().isAfter(weekAgo))
+                    .toList();
+        }
+
+        String filename = "week".equals(period) ? "transactions_week.csv" : "transactions_all.csv";
+        response.setContentType("text/csv; charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        var out = response.getOutputStream();
+        out.write(new byte[]{(byte)0xEF, (byte)0xBB, (byte)0xBF});
+        try (CSVWriter writer = new CSVWriter(new java.io.OutputStreamWriter(out, java.nio.charset.StandardCharsets.UTF_8))) {
+            writer.writeNext(new String[]{"Дата", "Тип", "Категория", "Сумма (₸)"});
+            for (TransactionDTO t : transactions) {
+                writer.writeNext(new String[]{
+                        t.getDate() != null ? t.getDate().format(fmt) : "",
+                        t.getType() == TransactionType.INCOME ? "Доход" : "Расход",
+                        t.getCategoryName() != null ? t.getCategoryName() : "",
+                        String.valueOf(t.getAmount())
+                });
+            }
+        }
     }
 
     @GetMapping("/transactions/search")

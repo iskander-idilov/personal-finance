@@ -6,6 +6,7 @@ import finance.dto.CategoryMapperMS;
 import finance.entity.Category;
 import finance.entity.TransactionType;
 import finance.repository.CategoryRepository;
+import finance.security.CurrentUserProvider;
 import finance.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -21,16 +22,23 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     CategoryMapperMS mapper;
 
-    @Cacheable("categories")
+    @Autowired
+    CurrentUserProvider currentUserProvider;
+
+    @Cacheable(value = "categories", key = "T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name")
     @Override
-    public List<CategoryDTO> getCategories(){return categoryRepository.findAll().stream().map(mapper::toDto).collect(Collectors.toList());}
-    @CacheEvict(value = "categories", allEntries = true)
+    public List<CategoryDTO> getCategories(){
+        return categoryRepository.findByUserIsNullOrUser(currentUserProvider.getCurrentUser())
+                .stream().map(mapper::toDto).collect(Collectors.toList());
+    }
+    @CacheEvict(value = "categories", key = "T(org.springframework.security.core.context.SecurityContextHolder).context.authentication.name")
     @Override
-    public void addCategory(String name){
+    public void addCategory(String name, TransactionType type){
         if (name != null && !name.trim().isEmpty()){
             Category category = Category.builder()
                     .name(name)
-                    .type(TransactionType.INCOME)
+                    .type(type != null ? type : TransactionType.EXPENSE)
+                    .user(currentUserProvider.getCurrentUser())
                     .build();
             categoryRepository.save(category);
         }
