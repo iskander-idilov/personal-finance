@@ -89,6 +89,22 @@ src/main/resources/
 - Java 17 (для локальной разработки без Docker)
 - Gradle
 
+### Настройка переменных окружения
+
+Все секреты (пароль БД, API-ключ Finnhub и т.д.) хранятся в `.env` и не коммитятся в репозиторий.
+
+1. Скопируйте пример конфигурации:
+   ```bash
+   cp .env.example .env
+   ```
+2. Откройте `.env` и заполните значения (как минимум `DB_PASSWORD` и `FINNHUB_API_KEY` — ключ Finnhub можно получить на [finnhub.io](https://finnhub.io/)).
+3. Запустите стек:
+   ```bash
+   docker compose up
+   ```
+
+> Для запуска приложения из IDE (не через Docker) экспортируйте переменные из `.env` в окружение вашей сессии/IDE перед стартом (например, через плагин EnvFile в IntelliJ IDEA или `export $(cat .env | xargs)` в shell).
+
 ### Запуск через Docker (полный стек)
 
 ```bash
@@ -116,16 +132,18 @@ docker-compose up postgres redis
 
 ## Конфигурация
 
-Основные параметры в `application.properties`:
+Основные параметры в `application.properties`, значения секретов подставляются из переменных окружения (см. `.env.example`):
 
-| Параметр | Значение по умолчанию |
-|---|---|
-| `server.port` | `8080` |
-| `spring.datasource.url` | `jdbc:postgresql://localhost:5432/BitLab` |
-| `spring.data.redis.host` | `localhost` |
-| `spring.data.redis.port` | `6379` |
-| `finnhub.api.key` | API-ключ Finnhub |
-| `finnhub.news.limit` | `20` |
+| Параметр | Переменная окружения | Значение по умолчанию |
+|---|---|---|
+| `server.port` | — | `8080` |
+| `spring.datasource.url` | `DB_URL` | `jdbc:postgresql://localhost:5432/BitLab` |
+| `spring.datasource.username` | `DB_USERNAME` | `postgres` |
+| `spring.datasource.password` | `DB_PASSWORD` | — (обязательно) |
+| `spring.data.redis.host` | — | `localhost` |
+| `spring.data.redis.port` | — | `6379` |
+| `finnhub.api.key` | `FINNHUB_API_KEY` | — (обязательно) |
+| `finnhub.news.limit` | — | `20` |
 
 ---
 

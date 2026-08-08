@@ -45,18 +45,35 @@ dependencies {
 
 }
 
+// Пароль от БД читается из переменной окружения DB_PASSWORD (см. .env.example).
+// На этапе конфигурации Gradle мы не падаем, если она не задана, — иначе ломались бы
+// задачи, не требующие подключения к БД (например, обычная сборка). Реальная проверка
+// происходит перед выполнением задач Liquibase, см. gradle.taskGraph.whenReady ниже.
+def dbPasswordEnv = System.getenv('DB_PASSWORD')
+
 liquibase {
     activities {
         main {
             changelogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
-            url 'jdbc:postgresql://localhost:5432/BitLab'
-            username 'postgres'
-            password 'REDACTED!'
+            url System.getenv('DB_URL') ?: 'jdbc:postgresql://localhost:5432/BitLab'
+            username System.getenv('DB_USERNAME') ?: 'postgres'
+            password dbPasswordEnv
             driver 'org.postgresql.Driver'
         }
     }
 }
 
+gradle.taskGraph.whenReady { graph ->
+    if (graph.allTasks.any { it.name in ['update', 'diffChangelog', 'status', 'rollback'] || it.group == 'liquibase' } && !dbPasswordEnv) {
+        throw new GradleException("Environment variable DB_PASSWORD is not set. Copy .env.example to .env, fill it in, and export the values before running Liquibase tasks.")
+    }
+}
+
 tasks.named('test') {
     useJUnitPlatform()
+    doFirst {
+        if (!System.getenv('DB_PASSWORD')) {
+            throw new GradleException("Environment variable DB_PASSWORD is not set. Copy .env.example to .env, fill it in, export the values, then re-run the tests (or run the postgres-test service via docker compose).")
+        }
+    }
 }

@@ -9,18 +9,19 @@ services:
       redis:
         condition: service_started
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/BitLab
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: REDACTED!
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-BitLab}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_DATA_REDIS_HOST: redis
+      FINNHUB_API_KEY: ${FINNHUB_API_KEY}
 
   # основная база данных для работы приложения
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_DB: BitLab
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: REDACTED!
+      POSTGRES_DB: ${POSTGRES_DB:-BitLab}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     healthcheck:
@@ -34,9 +35,9 @@ services:
       image: postgres:16
       container_name: 'test-database-container'
       environment:
-        POSTGRES_DB: BitLab
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: REDACTED!
+        POSTGRES_DB: ${POSTGRES_DB:-BitLab}
+        POSTGRES_USER: ${POSTGRES_USER:-postgres}
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
       ports:
         - "5433:5432"
 
