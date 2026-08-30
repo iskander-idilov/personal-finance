@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import java.math.BigDecimal;
 
 @Controller
 @RequiredArgsConstructor
@@ -42,7 +43,7 @@ public class RegisterController {
         userRepository.save(user);
 
         Account account = Account.builder()
-                .balance(0)
+                .balance(BigDecimal.ZERO)
                 .user(user)
                 .build();
         accountRepository.save(account);

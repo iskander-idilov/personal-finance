@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -48,7 +49,7 @@ public class TransactionController {
     }
 
     @PostMapping("/transactions")
-    public String transactions(@RequestParam double amount, @RequestParam TransactionType type, @RequestParam Long categoryId) {
+    public String transactions(@RequestParam BigDecimal amount, @RequestParam TransactionType type, @RequestParam Long categoryId) {
         Category category = categoryService.findById(categoryId);
         Account account = accountService.getAccount();
 
@@ -80,7 +81,7 @@ public class TransactionController {
 
     @PostMapping("transactions/edit")
     public String editTransaction(@RequestParam Long id,
-                                  @RequestParam double amount,
+                                  @RequestParam BigDecimal amount,
                                   @RequestParam TransactionType type,
                                   @RequestParam Long categoryId){
 
@@ -90,11 +91,7 @@ public class TransactionController {
         if (transaction == null){
             return "redirect:/transactions";
         } else {
-            transaction.setAmount(amount);
-            transaction.setType(type);
-            transaction.setCategory(category);
-
-            transactionService.save(transaction);
+            transactionService.updateTransaction(transaction, amount, type, category);
         }
 
         return "redirect:/transactions";

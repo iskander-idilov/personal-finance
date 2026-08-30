@@ -6,13 +6,10 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_started
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-BitLab}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      SPRING_DATA_REDIS_HOST: redis
       FINNHUB_API_KEY: ${FINNHUB_API_KEY}
 
   # основная база данных для работы приложения
@@ -40,8 +37,3 @@ services:
         POSTGRES_PASSWORD: ${DB_PASSWORD}
       ports:
         - "5433:5432"
-
-  redis:
-    image: redis:7
-    ports:
-      - "6379:6379"

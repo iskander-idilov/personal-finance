@@ -2,6 +2,7 @@ package finance.service.impl;
 import finance.dto.TransactionDTO;
 import finance.dto.TransactionMapperMS;
 import finance.entity.Account;
+import finance.entity.Category;
 import finance.entity.Transaction;
 import finance.entity.TransactionType;
 import finance.repository.AccountRepository;
@@ -10,6 +11,7 @@ import finance.security.CurrentUserProvider;
 import finance.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,18 +35,16 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<TransactionDTO> getTransactions(){return transactionRepository.findByAccount(currentAccount()).stream().map(mapper::toDto).collect(Collectors.toList());}
+    private BigDecimal signedAmount(TransactionType type, BigDecimal amount) {
+        return type == TransactionType.INCOME ? amount : amount.negate();
+    }
+
     @Override
     public void addTransaction(Transaction transaction){
         transactionRepository.save(transaction);
 
         Account account = currentAccount();
-
-        if (transaction.getType() == TransactionType.INCOME){
-            account.setBalance(account.getBalance() + transaction.getAmount());
-        } else {
-            account.setBalance(account.getBalance() - transaction.getAmount());
-        }
-
+        account.setBalance(account.getBalance().add(signedAmount(transaction.getType(), transaction.getAmount())));
         accountRepository.save(account);
     }
     @Override
@@ -60,13 +60,21 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepository.deleteById(id);
 
         Account account = currentAccount();
+        account.setBalance(account.getBalance().subtract(signedAmount(transaction.getType(), transaction.getAmount())));
+        accountRepository.save(account);
+    }
+    @Override
+    public void updateTransaction(Transaction transaction, BigDecimal newAmount, TransactionType newType, Category newCategory){
+        Account account = currentAccount();
+        account.setBalance(account.getBalance().subtract(signedAmount(transaction.getType(), transaction.getAmount())));
 
-        if (transaction.getType() == TransactionType.INCOME){
-            account.setBalance(account.getBalance() - transaction.getAmount());
-        } else {
-            account.setBalance(account.getBalance() + transaction.getAmount());
-        }
+        transaction.setAmount(newAmount);
+        transaction.setType(newType);
+        transaction.setCategory(newCategory);
 
+        account.setBalance(account.getBalance().add(signedAmount(newType, newAmount)));
+
+        transactionRepository.save(transaction);
         accountRepository.save(account);
     }
     @Override
@@ -74,16 +82,16 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<TransactionDTO> search(String search){return transactionRepository.search(currentAccount(), search).stream().map(mapper::toDto).collect(Collectors.toList());}
     @Override
-    public double getTotalIncome() {return transactionRepository.findByAccount(currentAccount()).stream().filter(t -> t.getType() == TransactionType.INCOME).mapToDouble(Transaction::getAmount).sum();}
+    public BigDecimal getTotalIncome() {return transactionRepository.findByAccount(currentAccount()).stream().filter(t -> t.getType() == TransactionType.INCOME).map(Transaction::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);}
     @Override
-    public double getTotalExpense() {return transactionRepository.findByAccount(currentAccount()).stream().filter(t -> t.getType() == TransactionType.EXPENSE).mapToDouble(Transaction::getAmount).sum();}
+    public BigDecimal getTotalExpense() {return transactionRepository.findByAccount(currentAccount()).stream().filter(t -> t.getType() == TransactionType.EXPENSE).map(Transaction::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);}
     @Override
-    public Map<String, Double> getExpensesByCategory() {
+    public Map<String, BigDecimal> getExpensesByCategory() {
         return getTransactions().stream()
                 .filter(t -> t.getType() == TransactionType.EXPENSE)
                 .collect(Collectors.groupingBy(
                         TransactionDTO::getCategoryName,
-                        Collectors.summingDouble(TransactionDTO::getAmount)
+                        Collectors.reducing(BigDecimal.ZERO, TransactionDTO::getAmount, BigDecimal::add)
                 ));
     }
     @Override

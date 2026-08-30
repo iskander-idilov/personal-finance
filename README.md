@@ -1,161 +1,158 @@
 # AURUM — Personal Finance Tracker
 
-**AURUM** — веб-приложение для управления личными финансами. Ведите учёт доходов и расходов, категоризируйте транзакции, отслеживайте котировки акций в реальном времени и читайте актуальные финансовые новости.
+**AURUM** is a web application for managing personal finances. Track income and expenses, categorize transactions, monitor real-time stock quotes, and read the latest financial news.
 
 ---
 
-## Стек технологий
+## Tech Stack
 
-| Слой | Технология |
+| Layer | Technology |
 |---|---|
 | Backend | Java 17, Spring Boot 4.0.6 |
-| Безопасность | Spring Security (BCrypt, ролевая модель) |
-| База данных | PostgreSQL 16 |
-| Миграции | Liquibase |
+| Security | Spring Security (BCrypt, role-based access) |
+| Database | PostgreSQL 16 |
+| Migrations | Liquibase |
 | ORM | Spring Data JPA / Hibernate |
-| Кэш | Redis 7 |
 | Frontend | Thymeleaf + Thymeleaf Layout Dialect |
-| Маппинг | MapStruct |
+| Mapping | MapStruct |
 | Boilerplate | Lombok |
-| Внешний API | Finnhub.io (акции и новости) |
-| Контейнеризация | Docker / Docker Compose |
-| Сборка | Gradle |
+| External API | Finnhub.io (stocks and news) |
+| Containerization | Docker / Docker Compose |
+| Build | Gradle |
 
 ---
 
-## Функциональность
+## Features
 
-### Аутентификация и авторизация
-- Регистрация и вход через форму Spring Security
-- Пароли хэшируются с помощью BCrypt
-- Ролевая модель доступа: `USER` и `ADMIN`
-- Страница `/access-denied` при попытке доступа к запрещённым разделам
+### Authentication and authorization
+- Registration and login via a Spring Security form
+- Passwords hashed with BCrypt
+- Role-based access model: `USER` and `ADMIN`
+- `/access-denied` page for forbidden sections
 
-### Дашборд (Главная страница)
-- Текущий баланс счёта
-- Сводка общих доходов и расходов
-- Разбивка расходов по категориям
-- Виджет котировок акций (AAPL, GOOGL, MSFT, TSLA, AMZN) — данные загружаются из Finnhub API и кэшируются при старте приложения
+### Dashboard (Home page)
+- Current account balance
+- Summary of total income and expenses
+- Expense breakdown by category
+- Stock quote widget (AAPL, GOOGL, MSFT, TSLA, AMZN) — data loaded from the Finnhub API and cached in memory on application startup
 
-### Транзакции
-- Добавление транзакций дохода или расхода с указанием суммы, типа и категории
-- Редактирование и удаление существующих транзакций
-- Постраничный вывод (10 записей на страницу)
-- Поиск транзакций по ключевому слову
-- Баланс счёта автоматически пересчитывается при каждом добавлении и удалении
+### Transactions
+- Add income or expense transactions with an amount, type, and category
+- Edit and delete existing transactions (editing recalculates the account balance for both the old and new amount/type)
+- Pagination (10 records per page)
+- Search transactions by keyword
+- Account balance is recalculated automatically on every add, edit, and delete
 
-### Категории
-- Создание и управление пользовательскими категориями транзакций
+### Categories
+- Create and manage custom transaction categories
 
-### Финансовые новости
-- До 20 последних финансовых новостей из Finnhub
-- Заголовок, краткое описание, изображение и время публикации (часовой пояс Asia/Almaty)
-- Кэшируются в памяти с асинхронным обновлением при старте
+### Financial news
+- Up to 20 latest financial news items from Finnhub
+- Headline, short description, image, and publish time (Asia/Almaty timezone)
+- Cached in memory with an asynchronous refresh on startup
 
-### Настройки профиля
-- Смена пароля (с проверкой текущего и подтверждением нового)
-- Смена email (с подтверждением паролем)
+### Profile settings
+- Change password (current password verification + confirmation)
+- Change email (password confirmation required)
 
-### Административная панель
-- Просмотр всех зарегистрированных пользователей по адресу `/admin/users`
-- Доступно только пользователям с ролью `ADMIN`
+### Admin panel
+- View all registered users at `/admin/users`
+- Restricted to users with the `ADMIN` role
 
 ---
 
-## Структура проекта
+## Project Structure
 
 ```
 src/main/java/finance/
-├── config/          # Безопасность, прогрев кэша Redis, конфигурация MVC, интерсепторы
-├── controller/      # Веб-контроллеры (Home, Login, Register, Transactions, Categories, News, Settings, Admin)
-├── dto/             # Data Transfer Objects + маппинг через MapStruct
-├── entity/          # JPA-сущности (User, Account, Transaction, Category, Role, TransactionType)
-├── repository/      # Spring Data репозитории + кастомные JPQL-запросы
+├── config/          # Security, cache warmup, MVC configuration, interceptors
+├── controller/      # Web controllers (Home, Login, Register, Transactions, Categories, News, Settings, Admin)
+├── dto/             # Data Transfer Objects + MapStruct mappers
+├── entity/          # JPA entities (User, Account, Transaction, Category, Role, TransactionType)
+├── repository/      # Spring Data repositories + custom JPQL/Criteria queries
 ├── security/        # CustomUserDetailsService
-└── service/         # Интерфейсы и реализации сервисов (Account, Transaction, Category, Stock, News)
+└── service/         # Service interfaces and implementations (Account, Transaction, Category, Stock, News)
 
 src/main/resources/
-├── db/changelog/    # Скрипты миграций Liquibase
-├── templates/       # HTML-шаблоны Thymeleaf
-└── static/images/   # Статические ресурсы
+├── db/changelog/    # Liquibase migration scripts
+├── templates/       # Thymeleaf HTML templates
+└── static/images/   # Static assets
 ```
 
 ---
 
-## Запуск
+## Running the Project
 
-### Требования
-- Docker и Docker Compose
-- Java 17 (для локальной разработки без Docker)
+### Requirements
+- Docker and Docker Compose
+- Java 17 (for local development without Docker)
 - Gradle
 
-### Настройка переменных окружения
+### Environment variables
 
-Все секреты (пароль БД, API-ключ Finnhub и т.д.) хранятся в `.env` и не коммитятся в репозиторий.
+All secrets (DB password, Finnhub API key, etc.) are stored in `.env` and are not committed to the repository.
 
-1. Скопируйте пример конфигурации:
+1. Copy the example configuration:
    ```bash
    cp .env.example .env
    ```
-2. Откройте `.env` и заполните значения (как минимум `DB_PASSWORD` и `FINNHUB_API_KEY` — ключ Finnhub можно получить на [finnhub.io](https://finnhub.io/)).
-3. Запустите стек:
+2. Open `.env` and fill in the values (at minimum `DB_PASSWORD` and `FINNHUB_API_KEY` — get a Finnhub key at [finnhub.io](https://finnhub.io/)).
+3. Start the stack:
    ```bash
    docker compose up
    ```
 
-> Для запуска приложения из IDE (не через Docker) экспортируйте переменные из `.env` в окружение вашей сессии/IDE перед стартом (например, через плагин EnvFile в IntelliJ IDEA или `export $(cat .env | xargs)` в shell).
+> To run the application from an IDE (not via Docker), export the variables from `.env` into your session/IDE environment before starting (e.g. via the EnvFile plugin in IntelliJ IDEA, or `export $(cat .env | xargs)` in a shell).
 
-### Запуск через Docker (полный стек)
+### Running with Docker (full stack)
 
 ```bash
 docker-compose up --build
 ```
 
-Приложение будет доступно по адресу `http://localhost:8080`.
+The application will be available at `http://localhost:8080`.
 
-> **Важно:** после изменения исходного кода необходимо пересобрать проект:
+> **Important:** after changing source code you need to rebuild:
 > ```bash
 > ./gradlew build
 > docker-compose up --build
 > ```
 
-### Запуск для разработки (через IDE)
+### Running for development (via IDE)
 
 ```bash
-# Запустить только инфраструктуру
-docker-compose up postgres redis
+# Start only the infrastructure
+docker-compose up postgres
 
-# Запустить приложение из IDE (рекомендуется IntelliJ IDEA)
+# Run the application from an IDE (IntelliJ IDEA recommended)
 ```
 
 ---
 
-## Конфигурация
+## Configuration
 
-Основные параметры в `application.properties`, значения секретов подставляются из переменных окружения (см. `.env.example`):
+Main settings live in `application.properties`; secret values are substituted from environment variables (see `.env.example`):
 
-| Параметр | Переменная окружения | Значение по умолчанию |
+| Parameter | Environment variable | Default |
 |---|---|---|
 | `server.port` | — | `8080` |
 | `spring.datasource.url` | `DB_URL` | `jdbc:postgresql://localhost:5432/BitLab` |
 | `spring.datasource.username` | `DB_USERNAME` | `postgres` |
-| `spring.datasource.password` | `DB_PASSWORD` | — (обязательно) |
-| `spring.data.redis.host` | — | `localhost` |
-| `spring.data.redis.port` | — | `6379` |
-| `finnhub.api.key` | `FINNHUB_API_KEY` | — (обязательно) |
+| `spring.datasource.password` | `DB_PASSWORD` | — (required) |
+| `finnhub.api.key` | `FINNHUB_API_KEY` | — (required) |
 | `finnhub.news.limit` | — | `20` |
 
 ---
 
-## Миграции базы данных
+## Database Migrations
 
-Миграции управляются через Liquibase и применяются автоматически при запуске. Файлы миграций находятся в:
+Migrations are managed with Liquibase and applied automatically on startup. Migration files live in:
 
 ```
 src/main/resources/db/changelog/changes/
 ```
 
-Ручной запуск миграций через Gradle:
+To run migrations manually via Gradle:
 
 ```bash
 ./gradlew update
@@ -163,27 +160,36 @@ src/main/resources/db/changelog/changes/
 
 ---
 
-## Тестирование
+## Testing
 
 ```bash
 ./gradlew test
 ```
 
-Тесты используют отдельный экземпляр PostgreSQL (`localhost:5433`), описанный в `docker-compose.yml`, и отдельный файл `src/test/resources/application.properties`.
+Tests use a separate PostgreSQL instance (`localhost:5433`), described in `docker-compose.yml` (`postgres-test`), and a dedicated `src/test/resources/application.properties`.
+
+### What's actually covered
+
+Current automated test coverage is intentionally minimal:
+
+- **`AppTests`** — a single Spring Boot smoke test that verifies the application context loads (`contextLoads`). Requires a running database (`postgres-test`).
+- **`TransactionServiceImplTest`** — unit tests (Mockito, no Spring context) for `TransactionServiceImpl`'s balance arithmetic: adding an income/expense transaction, removing one, and editing one (verifying the balance is correctly unwound from the old amount/type and reapplied with the new values).
+
+Not covered by automated tests: controllers (Transaction, Category, Settings, Admin, Register, Login, Home), CSV export, category management, account/user services, authentication and authorization rules, the Finnhub-backed stock and news services, and Liquibase migrations. Manual testing through the UI is currently required for these areas.
 
 ---
 
-## Интеграция с внешним API
+## External API Integration
 
 ### Finnhub.io
-- **Котировки акций:** `GET /api/v1/quote?symbol={ticker}&token={key}`  
-  Отслеживаемые тикеры: `AAPL`, `GOOGL`, `MSFT`, `TSLA`, `AMZN`
-- **Финансовые новости:** `GET /api/v1/news?category=general&token={key}`
+- **Stock quotes:** `GET /api/v1/quote?symbol={ticker}&token={key}`
+  Tracked tickers: `AAPL`, `GOOGL`, `MSFT`, `TSLA`, `AMZN`
+- **Financial news:** `GET /api/v1/news?category=general&token={key}`
 
-Данные загружаются асинхронно при старте приложения и хранятся в volatile-кэше в памяти. Блокировка через `AtomicBoolean` предотвращает одновременные запросы на обновление.
+Data is loaded asynchronously on application startup and held in a volatile in-memory cache. An `AtomicBoolean` guard prevents concurrent refresh requests.
 
 ---
 
-## Автор
+## Author
 
 **Iskander Idilov**

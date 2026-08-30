@@ -1,6 +1,7 @@
 package finance.entity;
 import jakarta.persistence.*;
 import lombok.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -12,7 +13,8 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private double amount;
+    @Column(precision = 19, scale = 2)
+    private BigDecimal amount;
     private LocalDateTime date;
     private TransactionType type;
     @ManyToOne

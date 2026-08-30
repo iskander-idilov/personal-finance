@@ -8,20 +8,11 @@ import finance.repository.CategoryRepository;
 import finance.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.cache.RedisCacheConfiguration;
-import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@EnableCaching
 @org.springframework.scheduling.annotation.EnableAsync
 public class MyAppConfig implements WebMvcConfigurer {
 
@@ -32,12 +23,8 @@ public class MyAppConfig implements WebMvcConfigurer {
     @Autowired
     AccountRepository accountRepository;
 
-    @Autowired
-    private RedisConnectionFactory redisConnectionFactory;
     @PostConstruct
     public void init(){
-        redisConnectionFactory.getConnection().serverCommands().flushDb();
-
         if (accountRepository.count() == 0){
             User user = User.builder()
                     .name("По умолчанию")
@@ -45,7 +32,7 @@ public class MyAppConfig implements WebMvcConfigurer {
             userRepository.save(user);
 
             Account account = Account.builder()
-                    .balance(0)
+                    .balance(java.math.BigDecimal.ZERO)
                     .user(user)
                     .build();
 
@@ -125,25 +112,6 @@ public class MyAppConfig implements WebMvcConfigurer {
                     .icon("bi-controller")
                     .build());
         }
-    }
-
-    @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        GenericJacksonJsonRedisSerializer serializer = GenericJacksonJsonRedisSerializer.builder().build();
-
-        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
-
-        return RedisCacheManager.builder(connectionFactory)
-                .cacheDefaults(config)
-                .build();
-    }
-
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
-        return template;
     }
 
     @Autowired
