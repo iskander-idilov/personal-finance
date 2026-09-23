@@ -2,6 +2,7 @@
 
 **AURUM** is a web application for managing personal finances. Track income and expenses, categorize transactions, monitor real-time stock quotes, and read the latest financial news.
 
+
 ---
 
 ## Tech Stack
